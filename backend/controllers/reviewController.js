@@ -53,6 +53,7 @@ const getReviews = async (req, res) => {
       populate: { path: 'staff service', select: 'name specialty' },
     }).populate('user', 'name');
 
+    
     // Filter out reviews where appointment doesn't match (populate returns null if not matched)
     const filtered = reviews.filter(r => r.appointment !== null);
     res.json(filtered);
