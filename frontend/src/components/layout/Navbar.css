@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Glacial+Indifference&display=swap');
+
+.navbar {
+    background-color: transparent;
+    padding: 1.5rem 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.navbar-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    position: relative;
+}
+
+/* Left Navigation */
+.navbar-left {
+    display: flex;
+    gap: 2.5rem;
+    flex: 1;
+}
+
+/* Center Logo */
+.navbar-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    margin-left: 25px;
+}
+
+.navbar-logo {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.05em;
+}
+
+/* Right Navigation */
+.navbar-right {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+/* Navigation Links */
+.nav-link {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 1rem;
+    color: white;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.nav-link:hover {
+    opacity: 0.8;
+}
+
+/* Book Appointment Button */
+.btn-primary {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 1rem;
+    color: black;
+    background-color: #f0cb37;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    background-color: #e0bb27;
+    transform: translateY(-2px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .navbar-container {
+        padding: 0 1.5rem;
+        gap: 1rem;
+    }
+
+    .navbar-left {
+        gap: 1.5rem;
+    }
+
+    .navbar-logo {
+        font-size: 1.5rem;
+    }
+
+    .nav-link {
+        font-size: 0.9rem;
+    }
+
+    .btn-primary {
+        font-size: 0.9rem;
+        padding: 0.6rem 1.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar-container {
+        flex-wrap: wrap;
+        padding: 0 1rem;
+    }
+
+    .navbar-left {
+        order: 1;
+        flex-basis: 100%;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .navbar-center {
+        order: 2;
+        flex-basis: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .navbar-right {
+        order: 3;
+        flex-basis: 100%;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .navbar-logo {
+        font-size: 1.25rem;
+    }
+
+    .nav-link {
+        font-size: 0.85rem;
+    }
+
+    .btn-primary {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
+}

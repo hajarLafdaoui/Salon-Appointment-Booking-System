@@ -1,0 +1,189 @@
+@import url('https://fonts.googleapis.com/css2?family=Glacial+Indifference&display=swap');
+
+.hero {
+    width: 100%;
+    padding: 6rem 0;
+    background-color: #ffffff;
+}
+
+.hero-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+/* Left - Text Content */
+.hero-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.hero-headline {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.hero-subtext {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 1.125rem;
+    color: #666;
+    line-height: 1.6;
+    max-width: 500px;
+}
+
+/* Buttons */
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.btn-primary {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: black;
+    background-color: #f0cb37;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+    width: fit-content;
+}
+
+.btn-primary:hover {
+    background-color: #e0bb27;
+    transform: translateY(-2px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    background-color: transparent;
+    padding: 1rem 2rem;
+    border: 2px solid #1a1a1a;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+    width: fit-content;
+}
+
+.btn-secondary:hover {
+    background-color: #1a1a1a;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.btn-secondary:active {
+    transform: translateY(0);
+}
+
+/* Trust Section */
+.hero-trust {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.trust-icon {
+    font-size: 1.5rem;
+}
+
+.trust-text {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 0.95rem;
+    color: #666;
+}
+
+/* Right - Image/Illustration */
+.hero-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 500px;
+    background-color: #f5f5f5;
+    border-radius: 1rem;
+}
+
+.hero-image-placeholder {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 1.5rem;
+    color: #999;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .hero-container {
+        gap: 2rem;
+    }
+
+    .hero-headline {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtext {
+        font-size: 1rem;
+    }
+
+    .hero-right {
+        min-height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        padding: 4rem 0;
+    }
+
+    .hero-container {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 0 1rem;
+    }
+
+    .hero-headline {
+        font-size: 2rem;
+    }
+
+    .hero-subtext {
+        font-size: 0.95rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: 100%;
+        text-align: center;
+    }
+
+    .hero-right {
+        min-height: 300px;
+        order: -1;
+    }
+}
