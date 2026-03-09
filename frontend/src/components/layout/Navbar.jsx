@@ -1,10 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 
 const Navbar = () => {
+    const [isHidden, setIsHidden] = useState(false);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    const handleScroll = useCallback(() => {
+        const currentScrollY = window.scrollY;
+
+        if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            setIsHidden(true);
+        } else {
+            setIsHidden(false);
+        }
+
+        setLastScrollY(currentScrollY);
+    }, [lastScrollY]);
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [handleScroll]);
+
     return (
-        <nav className="navbar">
+        <nav className={`navbar ${isHidden ? 'hidden' : ''}`}>
             <div className="navbar-container">
                 {/* Left Navigation Links */}
                 <div className="navbar-left">
