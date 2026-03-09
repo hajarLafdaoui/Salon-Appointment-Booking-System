@@ -16,6 +16,8 @@
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
+    margin-top: -80px;
+    padding-top: 80px;
 }
 
 .home-content {
@@ -165,19 +167,20 @@
 /* Services Section */
 .services-section {
     background-color: #f3efe8;
-    padding: 4rem 2rem;
+    padding: 2rem 2rem 4rem 2rem;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: auto;
+    min-height: 100vh;
 }
 
 .services-header {
     text-align: center;
     margin-bottom: 3rem;
     max-width: 600px;
+    padding-top: 0;
 }
 
 .services-title {
@@ -187,6 +190,7 @@
     color: #333;
     margin: 0 0 1rem 0;
     letter-spacing: -0.02em;
+    margin-top: 0;
 }
 
 .services-subtitle {
@@ -198,25 +202,61 @@
 }
 
 .services-slider-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    display: flex;
+    align-items: center;
     gap: 1.5rem;
+    position: relative;
     width: 100%;
     max-width: 1400px;
+    overflow: hidden;
+    mask-image: linear-gradient(to right,
+            transparent 0%,
+            black 10%,
+            black 90%,
+            transparent 100%);
 }
 
 .services-slider {
-    display: contents;
+    display: flex;
+    gap: 1.5rem;
+    flex: 1;
+    padding: 0.5rem 0;
+    width: 100%;
+    will-change: transform;
+}
+
+/* Infinite scroll animation - continuous seamless loop */
+@keyframes infiniteScroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        /* Move left by exactly the width of one set of cards */
+        transform: translateX(calc(-50% - 0.75rem));
+    }
+}
+
+/* Apply animation to the slider when it has content */
+.services-slider.animate {
+    animation: infiniteScroll 20s linear infinite;
+}
+
+/* Pause animation on hover */
+.services-slider.animate:hover {
+    animation-play-state: paused;
 }
 
 .service-card {
+    flex: 0 0 calc(25% - 1.125rem);
     background-color: white;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
+    will-change: transform;
 }
 
 .service-card:hover {
@@ -236,6 +276,7 @@
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
+    will-change: transform;
 }
 
 .service-card:hover .service-image {
@@ -309,8 +350,8 @@
         font-size: 2rem;
     }
 
-    .services-slider-container {
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    .service-card {
+        flex: 0 0 calc(33.333% - 1rem);
     }
 }
 
@@ -346,14 +387,24 @@
         font-size: 0.9rem;
     }
 
+    .service-card {
+        flex: 0 0 calc(50% - 0.75rem);
+    }
+
     .services-slider-container {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .services-slider {
         gap: 1rem;
     }
 }
 
 @media (max-width: 480px) {
-    .services-slider-container {
-        grid-template-columns: 1fr;
+    .service-card {
+        flex: 0 0 calc(80% - 0.5rem);
     }
 }
+
+/* How Booking Works Section */
+/* Moved to HowItWorks.css */

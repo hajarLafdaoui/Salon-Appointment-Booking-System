@@ -51,9 +51,15 @@ const Services = () => {
         }
     ];
 
-    const services = baseServices;
+    const services = [...baseServices, ...baseServices];
 
     useEffect(() => {
+        // Preload images for smoother animation
+        services.forEach(service => {
+            const img = new Image();
+            img.src = service.image;
+        });
+
         if (sliderRef.current) {
             sliderRef.current.classList.add('animate');
         }
@@ -63,7 +69,7 @@ const Services = () => {
                 sliderRef.current.classList.remove('animate');
             }
         };
-    }, []);
+    }, [services]);
 
     return (
         <div className="services-page">

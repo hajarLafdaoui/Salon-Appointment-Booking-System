@@ -1,0 +1,246 @@
+.how-it-works-page {
+    width: 100%;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* How Booking Works Section */
+.booking-works-section {
+    background-color: #f3efe8;
+    padding: 2rem 2rem 3rem 2rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: auto;
+    margin-top: -80px;
+    padding-top: calc(2rem + 80px);
+}
+
+.booking-works-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    max-width: 700px;
+}
+
+.booking-works-title {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+}
+
+.booking-works-subtitle {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.booking-steps-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto 2rem auto;
+    flex-wrap: nowrap;
+}
+
+.booking-step {
+    flex: 1;
+    min-width: 240px;
+    max-width: 280px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.booking-step:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.step-icon {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #bf5128;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(191, 81, 40, 0.2);
+}
+
+.icon-number {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: white;
+    position: absolute;
+    opacity: 0.3;
+}
+
+.icon-emoji {
+    font-size: 2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.step-title {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.step-description {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.step-connector {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #bf5128 0%, transparent 100%);
+    display: none;
+}
+
+.booking-works-cta {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.cta-button {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #bf5128;
+    background-color: transparent;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    text-decoration: none;
+    border: 2px solid #bf5128;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.cta-button:hover {
+    transform: translateY(-3px);
+    background-color: #bf5128;
+    color: white;
+}
+
+.cta-button:active {
+    transform: translateY(-1px);
+}
+
+/* Responsive Design for Booking Works */
+@media (max-width: 1024px) {
+    .booking-works-section {
+        padding: 2rem 2rem;
+        min-height: auto;
+    }
+
+    .booking-steps-container {
+        gap: 1.5rem;
+    }
+
+    .booking-step {
+        min-width: 250px;
+        max-width: 280px;
+        padding: 1.5rem;
+    }
+
+    .step-icon {
+        width: 70px;
+        height: 70px;
+    }
+
+    .icon-emoji {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .booking-works-title {
+        font-size: 2rem;
+    }
+
+    .booking-works-subtitle {
+        font-size: 1rem;
+    }
+
+    .booking-steps-container {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .step-connector {
+        display: none;
+    }
+
+    .booking-step {
+        width: 100%;
+        max-width: 100%;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .booking-works-section {
+        padding: 2rem 1rem;
+    }
+
+    .booking-works-title {
+        font-size: 1.75rem;
+    }
+
+    .booking-works-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .booking-step {
+        padding: 1.5rem 1rem;
+    }
+
+    .step-icon {
+        width: 60px;
+        height: 60px;
+    }
+
+    .icon-emoji {
+        font-size: 1.75rem;
+    }
+
+    .step-title {
+        font-size: 1.1rem;
+    }
+
+    .step-description {
+        font-size: 0.85rem;
+    }
+
+    .cta-button {
+        padding: 0.75rem 2rem;
+        font-size: 0.95rem;
+    }
+}

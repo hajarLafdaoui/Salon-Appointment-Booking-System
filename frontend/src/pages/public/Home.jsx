@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
+import HowItWorks from './HowItWorks';
 import heroImage from '../../assets/images/8.jpg';
 import hairImage from '../../assets/images/Hair.jpg';
 import skincareImage from '../../assets/images/Skincare.jpg';
@@ -52,9 +53,15 @@ const Home = () => {
         }
     ];
 
-    const services = baseServices;
+    const services = [...baseServices, ...baseServices];
 
     useEffect(() => {
+        // Preload images for smoother animation
+        services.forEach(service => {
+            const img = new Image();
+            img.src = service.image;
+        });
+
         if (sliderRef.current) {
             sliderRef.current.classList.add('animate');
         }
@@ -64,7 +71,7 @@ const Home = () => {
                 sliderRef.current.classList.remove('animate');
             }
         };
-    }, []);
+    }, [services]);
 
     return (
         <div className="landing-page">
@@ -129,6 +136,9 @@ const Home = () => {
                     <Link to="/booking" className="view-all-link">Book a Service →</Link>
                 </div>
             </div>
+
+            {/* How Booking Works Component */}
+            <HowItWorks />
         </div>
     );
 };
