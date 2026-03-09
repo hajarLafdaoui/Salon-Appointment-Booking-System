@@ -4,6 +4,7 @@ import Navbar from '../../components/layout/Navbar';
 import HowItWorks from './HowItWorks';
 import Staff from './Staff';
 import Testimonials from './Testimonials';
+import CTA from './CTA';
 import heroImage from '../../assets/images/8.jpg';
 import hairImage from '../../assets/images/Hair.jpg';
 import skincareImage from '../../assets/images/Skincare.jpg';
@@ -147,6 +148,9 @@ const Home = () => {
 
             {/* Testimonials Component */}
             <Testimonials />
+
+            {/* CTA Component */}
+            <CTA />
         </div>
     );
 };

@@ -1,0 +1,122 @@
+/* Call To Action Section */
+.cta-section {
+    background-color: #bf5128;
+    padding: 4rem 2rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: auto;
+}
+
+.cta-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    max-width: 600px;
+    text-align: center;
+}
+
+.cta-title {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+.cta-subtext {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.95);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.cta-button {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: black;
+    background-color: #f0cb37;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+.cta-button:hover {
+    background-color: #e0bb27;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.cta-button:active {
+    transform: translateY(-1px);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .cta-section {
+        padding: 3rem 2rem;
+    }
+
+    .cta-title {
+        font-size: 2rem;
+    }
+
+    .cta-subtext {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .cta-section {
+        padding: 2.5rem 1rem;
+    }
+
+    .cta-content {
+        gap: 1.25rem;
+    }
+
+    .cta-title {
+        font-size: 1.75rem;
+    }
+
+    .cta-subtext {
+        font-size: 0.95rem;
+    }
+
+    .cta-button {
+        font-size: 0.95rem;
+        padding: 0.85rem 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .cta-section {
+        padding: 2rem 1rem;
+    }
+
+    .cta-title {
+        font-size: 1.5rem;
+    }
+
+    .cta-subtext {
+        font-size: 0.9rem;
+    }
+
+    .cta-button {
+        font-size: 0.9rem;
+        padding: 0.75rem 1.5rem;
+    }
+}
