@@ -1,0 +1,241 @@
+/* Testimonials Section */
+.testimonials-section {
+    background-color: white;
+    padding: 2rem 2rem 3rem 2rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: auto;
+}
+
+.testimonials-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 1rem;
+}
+
+.testimonials-title {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.testimonials-controls {
+    display: flex;
+    gap: 0.5rem;
+    /* margin-left: 50px; */
+
+}
+
+.arrow-button {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: black;
+    background-color: #f0cb37;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.arrow-button:hover {
+    background-color: #e0bb27;
+    transform: scale(1.1);
+}
+
+.arrow-button:active {
+    transform: scale(0.95);
+}
+
+.next-button {
+    /* margin-right: 4rem; */
+    /* margin-left: 29px; */
+
+}
+
+.testimonials-subtitle {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.6;
+    margin: 0 0 2rem 0;
+    text-align: center;
+}
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1000px;
+    margin-bottom: 1rem;
+}
+
+.testimonial-card {
+    background-color: #f9f7f4;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    transition: all 0.3s ease;
+    border-left: 4px solid #bf5128;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.testimonial-rating {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.star {
+    font-size: 1rem;
+}
+
+.testimonial-text {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 0.9rem;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    font-style: italic;
+}
+
+.testimonial-author {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.author-name {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.author-service {
+    font-family: 'Glacial Indifference', sans-serif;
+    font-size: 0.75rem;
+    color: #bf5128;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .testimonials-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    .testimonials-title {
+        font-size: 1.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .testimonials-section {
+        padding: 2rem 1rem;
+    }
+
+    .testimonials-header {
+        margin-bottom: 1.5rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .testimonials-title {
+        font-size: 1.5rem;
+    }
+
+    .testimonials-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .testimonial-card {
+        padding: 1.25rem;
+    }
+
+    .testimonial-text {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .testimonials-section {
+        padding: 1.5rem 1rem;
+    }
+
+    .testimonials-title {
+        font-size: 1.3rem;
+    }
+
+    .testimonials-subtitle {
+        font-size: 0.85rem;
+    }
+
+    .testimonial-card {
+        padding: 1rem;
+    }
+
+    .testimonial-text {
+        font-size: 0.8rem;
+    }
+
+    .author-name {
+        font-size: 0.8rem;
+    }
+
+    .author-service {
+        font-size: 0.7rem;
+    }
+
+    .star {
+        font-size: 0.9rem;
+    }
+}
+
+.testimonials-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.testimonials-footer .next-button {
+    margin-right: 0;
+}
+
+.testimonials-footer .arrow-button {
+    background-color: transparent;
+    border: 2px solid #bf5128;
+    color: #bf5128;
+}

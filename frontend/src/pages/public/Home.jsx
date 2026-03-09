@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import HowItWorks from './HowItWorks';
 import Staff from './Staff';
+import Testimonials from './Testimonials';
 import heroImage from '../../assets/images/8.jpg';
 import hairImage from '../../assets/images/Hair.jpg';
 import skincareImage from '../../assets/images/Skincare.jpg';
@@ -143,6 +144,9 @@ const Home = () => {
 
             {/* Staff Component */}
             <Staff />
+
+            {/* Testimonials Component */}
+            <Testimonials />
         </div>
     );
 };
