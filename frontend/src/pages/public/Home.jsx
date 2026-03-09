@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
 import HowItWorks from './HowItWorks';
 import Staff from './Staff';
 import Testimonials from './Testimonials';
@@ -151,6 +152,9 @@ const Home = () => {
 
             {/* CTA Component */}
             <CTA />
+
+            {/* Footer Component */}
+            <Footer />
         </div>
     );
 };

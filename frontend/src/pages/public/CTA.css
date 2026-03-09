@@ -1,6 +1,6 @@
 /* Call To Action Section */
 .cta-section {
-    background-color: #bf5128;
+    background-color: #f0ede7;
     padding: 4rem 2rem;
     width: 100%;
     display: flex;
@@ -24,7 +24,7 @@
     font-family: 'Glacial Indifference', sans-serif;
     font-size: 2.5rem;
     font-weight: 700;
-    color: white;
+    color: BLACK;
     margin: 0;
     letter-spacing: -0.02em;
     line-height: 1.2;
@@ -33,7 +33,7 @@
 .cta-subtext {
     font-family: 'Glacial Indifference', sans-serif;
     font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.95);
+    color: black;
     margin: 0;
     line-height: 1.6;
 }
