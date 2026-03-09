@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import HowItWorks from './HowItWorks';
+import Staff from './Staff';
 import heroImage from '../../assets/images/8.jpg';
 import hairImage from '../../assets/images/Hair.jpg';
 import skincareImage from '../../assets/images/Skincare.jpg';
@@ -139,6 +140,9 @@ const Home = () => {
 
             {/* How Booking Works Component */}
             <HowItWorks />
+
+            {/* Staff Component */}
+            <Staff />
         </div>
     );
 };
