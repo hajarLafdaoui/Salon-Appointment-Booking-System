@@ -5,10 +5,11 @@ const Service = require('../models/Service');
 // @access  Private/Admin
 const createService = async (req, res) => {
   try {
-    const { name, description, duration, price, image, staff } = req.body;
+    const { name, description, category, duration, price, image, staff } = req.body;
     const service = await Service.create({
       name,
       description,
+      category,
       duration,
       price,
       image,
@@ -25,7 +26,12 @@ const createService = async (req, res) => {
 // @access  Public
 const getAllServices = async (req, res) => {
   try {
-    const services = await Service.find({ isActive: true }).populate('staff', 'specialty user').populate({
+    const { category } = req.query;
+    const filter = { isActive: true };
+    if (category && category !== 'All') {
+      filter.category = category;
+    }
+    const services = await Service.find(filter).populate('staff', 'specialty user').populate({
       path: 'staff',
       populate: { path: 'user', select: 'name' },
     });
@@ -61,6 +67,7 @@ const updateService = async (req, res) => {
 
     service.name = req.body.name || service.name;
     service.description = req.body.description || service.description;
+    service.category = req.body.category || service.category;
     service.duration = req.body.duration || service.duration;
     service.price = req.body.price || service.price;
     service.image = req.body.image || service.image;

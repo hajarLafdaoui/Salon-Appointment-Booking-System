@@ -137,7 +137,7 @@ const Home = () => {
                 </div>
 
                 <div className="services-footer">
-                    <Link to="/booking" className="view-all-link">Book a Service →</Link>
+                    <Link to="/services" className="view-all-link">Browse All Services →</Link>
                 </div>
             </div>
 

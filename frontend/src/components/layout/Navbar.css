@@ -11,6 +11,16 @@
     transition: transform 0.3s ease;
 }
 
+/* Same background as Services page - blends with page */
+.navbar.navbar--services {
+    background-color: #f3efe8 !important;
+    box-shadow: none !important;
+}
+
+.navbar.navbar--services .navbar-logo {
+    color: black !important;
+}
+
 .navbar-container {
     max-width: 1400px;
     margin: 0 auto;

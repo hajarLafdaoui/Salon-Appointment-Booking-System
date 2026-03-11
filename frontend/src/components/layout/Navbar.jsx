@@ -59,7 +59,7 @@ const Navbar = () => {
     };
 
     return (
-        <nav className={`navbar ${isHidden ? 'hidden' : ''}`}>
+        <nav className={`navbar ${location.pathname === '/services' ? 'navbar--services' : ''} ${isHidden ? 'hidden' : ''}`}>
             <div className="navbar-container">
                 {/* Left Navigation Links */}
                 <div className="navbar-left">
