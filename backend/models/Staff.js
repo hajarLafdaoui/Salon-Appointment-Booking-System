@@ -59,10 +59,29 @@ const staffSchema = mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true
+    },
+    
+    portfolioImages: [
+      {
+        type: String
+      }
+    ],
+
+    phoneNumber: {
+      type: String
+    },
+
+    websiteUrl: {
+      type: String
     }
   },
   { timestamps: true }
 );
+
+// Add indices for performance
+staffSchema.index({ name: 'text', specialty: 'text' });
+staffSchema.index({ name: 1 });
+staffSchema.index({ specialty: 1 });
 
 const Staff = mongoose.model('Staff', staffSchema);
 

@@ -19,11 +19,37 @@ const createStaff = async (req, res) => {
 // GET ALL STAFF (Public for booking page)
 const getAllStaff = async (req, res) => {
   try {
-    const staff = await Staff.find({ isActive: true })
-      .populate("services")
-      .populate("user", "name email");
+    const pageSize = Number(req.query.limit) || 8;
+    const page = Number(req.query.page) || 1;
 
-    res.json(staff);
+    const name = req.query.name || '';
+    const specialty = req.query.specialty || '';
+
+    const query = { isActive: true };
+
+    if (name) {
+      query.name = { $regex: name, $options: 'i' };
+    }
+
+    if (specialty) {
+      query.specialty = specialty;
+    }
+
+    const count = await Staff.countDocuments(query);
+    const staff = await Staff.find(query)
+      .populate("services", "name price duration")
+      .populate("user", "name email")
+      .limit(pageSize)
+      .skip(pageSize * (page - 1))
+      .sort({ rating: -1, createdAt: -1 })
+      .lean();
+
+    res.json({
+      staff,
+      page,
+      pages: Math.ceil(count / pageSize),
+      total: count
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

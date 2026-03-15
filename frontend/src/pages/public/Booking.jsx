@@ -4,7 +4,7 @@ import './Booking.css';
 import placeholderImage from '../../assets/images/Hair.jpg';
 import leftArrow from '../../assets/icons/left-arrow.png';
 import rightArrow from '../../assets/icons/right-arrow.png';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useToast } from '../../context/ToastContext';
 
 const Booking = () => {
@@ -16,6 +16,7 @@ const Booking = () => {
     const [loading, setLoading] = useState(true);
     const [activeMenu, setActiveMenu] = useState(null);
     const [currentStep, setCurrentStep] = useState(urlServiceId ? 2 : 1);
+    const [selectedDetailsStaff, setSelectedDetailsStaff] = useState(null);
 
     // Date & Time state
     const today = new Date();
@@ -37,7 +38,16 @@ const Booking = () => {
     const categories = ['All', 'Hair', 'Skincare', 'Nails', 'Makeup', 'Brows & Lashes', 'Spa & Massage'];
 
     const navigate = useNavigate();
+    const location = useLocation();
     const { showToast } = useToast();
+
+    // Check for staffId passed via state (from Staff Page)
+    useEffect(() => {
+        if (location.state?.staffId) {
+            setSelectedStaff(location.state.staffId);
+            setCurrentStep(3);
+        }
+    }, [location.state]);
 
     // Fetch staff from backend
     useEffect(() => {
@@ -46,7 +56,8 @@ const Booking = () => {
                 const response = await fetch('http://localhost:5000/api/staff');
                 if (!response.ok) throw new Error("Failed to fetch staff");
                 const data = await response.json();
-                setStaffMembers(data);
+                // API now returns { staff: [...], ... }
+                setStaffMembers(Array.isArray(data) ? data : (data.staff || []));
             } catch (error) {
                 console.error("Error fetching staff:", error);
             } finally {
@@ -153,10 +164,18 @@ const Booking = () => {
         setCurrentStep(3);
     };
 
-    const handleViewDetails = (e, staffId) => {
+    const handleOpenDetails = (staff) => {
+        setSelectedDetailsStaff(staff);
+    };
+
+    const handleCloseDetails = () => {
+        setSelectedDetailsStaff(null);
+    };
+
+    const handleViewDetails = (e, staff) => {
         e.stopPropagation();
         setActiveMenu(null);
-        navigate(`/staff/${staffId}`);
+        handleOpenDetails(staff);
     };
 
     /* ─── Navigation handlers ─── */
@@ -169,6 +188,11 @@ const Booking = () => {
             setCurrentStep(3);
         } else if (currentStep === 3) {
             if (!selectedDate || !selectedTime) return;
+            if (!selectedService) {
+                showToast('Please select a service before confirming.', 'info');
+                setCurrentStep(1);
+                return;
+            }
             setCurrentStep(4);
         } else if (currentStep === 4) {
             handleConfirm();
@@ -602,7 +626,7 @@ const Booking = () => {
     return (
         <div className="booking-viewport">
             <Navbar />
-            <div className="booking-container">
+            <div className={`booking-container ${selectedDetailsStaff ? 'sidebar-open' : ''}`}>
 
                 {/* Sidebar Steps */}
                 <div className="booking-sidebar">
@@ -746,7 +770,7 @@ const Booking = () => {
                                                                 <button className="menu-item" onClick={(e) => handleBookNow(e, staff._id)}>
                                                                     Book with {staff.name?.split(' ')[0]}
                                                                 </button>
-                                                                <button className="menu-item" onClick={(e) => handleViewDetails(e, staff._id)}>
+                                                                <button className="menu-item" onClick={(e) => handleViewDetails(e, staff)}>
                                                                     View Details
                                                                 </button>
                                                             </div>
@@ -841,6 +865,104 @@ const Booking = () => {
                     )}
 
                 </div>
+
+                {/* Staff Details Sidebar */}
+                {selectedDetailsStaff && (
+                    <aside className="staff-details-sidebar">
+                        <div className="sidebar-header">
+                            <button className="close-sidebar" onClick={handleCloseDetails}>×</button>
+                            <div className="sidebar-profile-main">
+                                <div className="sidebar-avatar-wrapper">
+                                    <img src={selectedDetailsStaff.image || placeholderImage} alt={selectedDetailsStaff.name} />
+                                    <span className="availability-dot"></span>
+                                </div>
+                                <div className="sidebar-info-main">
+                                    <h2>{selectedDetailsStaff.name}</h2>
+                                    <span className="sidebar-specialty-tag">{selectedDetailsStaff.specialty}</span>
+                                    <div className="sidebar-rating">
+                                        <span className="stars">★★★★★</span>
+                                        <span className="rating-num">{selectedDetailsStaff.rating || '4.9'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="sidebar-scroll-content">
+                            <div className="sidebar-section">
+                                <h3>About Specialist</h3>
+                                <p className="sidebar-bio-full">{selectedDetailsStaff.bio}</p>
+                            </div>
+
+                            <div className="sidebar-stats">
+                                <div className="stat-item">
+                                    <span className="stat-value">{selectedDetailsStaff.experienceYears || '0'}y+</span>
+                                    <span className="stat-label">Exp</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-value">1.2k+</span>
+                                    <span className="stat-label">Clients</span>
+                                </div>
+                                <div className="stat-item">
+                                    <span className="stat-value">{selectedDetailsStaff.rating || '4.9'}</span>
+                                    <span className="stat-label">Rating</span>
+                                </div>
+                            </div>
+
+                            <div className="sidebar-section">
+                                <div className="section-header-flex">
+                                    <h3>Recent Work</h3>
+                                    <button className="see-all-link">See All</button>
+                                </div>
+                                <div className="work-gallery-grid">
+                                    {selectedDetailsStaff.portfolioImages && selectedDetailsStaff.portfolioImages.length > 0 ? (
+                                        selectedDetailsStaff.portfolioImages.map((img, idx) => (
+                                            <div key={idx} className="work-item-thumb"><img src={img} alt="Work" /></div>
+                                        ))
+                                    ) : (
+                                        <>
+                                            <div className="work-item-thumb"><img src={placeholderImage} alt="Work" /></div>
+                                            <div className="work-item-thumb"><img src={placeholderImage} alt="Work" /></div>
+                                            <div className="work-item-thumb"><img src={placeholderImage} alt="Work" /></div>
+                                            <div className="work-item-thumb"><img src={placeholderImage} alt="Work" /></div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="sidebar-section">
+                                <h3>Contact Info</h3>
+                                <div className="contact-list">
+                                    {selectedDetailsStaff.websiteUrl && (
+                                        <div className="contact-item">
+                                            <span className="contact-icon">🌐</span>
+                                            <span className="contact-text">{selectedDetailsStaff.websiteUrl}</span>
+                                        </div>
+                                    )}
+                                    <div className="contact-item">
+                                        <span className="contact-icon">📧</span>
+                                        <span className="contact-text">{selectedDetailsStaff.user?.email || `hello@${selectedDetailsStaff.name.toLowerCase().replace(' ', '')}.com`}</span>
+                                    </div>
+                                    <div className="contact-item">
+                                        <span className="contact-icon">📞</span>
+                                        <span className="contact-text">{selectedDetailsStaff.phoneNumber || '+1 (555) 123-4567'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="sidebar-footer">
+                            <button 
+                                className="sidebar-book-btn"
+                                onClick={() => {
+                                    handleBookNow(null, selectedDetailsStaff._id);
+                                    handleCloseDetails();
+                                }}
+                            >
+                                Book Appointment
+                            </button>
+                        </div>
+                    </aside>
+                )}
             </div>
         </div>
     );
