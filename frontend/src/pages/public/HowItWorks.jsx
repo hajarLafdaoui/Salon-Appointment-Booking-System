@@ -1,9 +1,26 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import Navbar from '../../components/layout/Navbar';
 import './HowItWorks.css';
 
 const HowItWorks = () => {
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+
+    const handleBookClick = () => {
+        if (!isAuthenticated) {
+            navigate('/login', { 
+                state: { 
+                    from: '/booking',
+                    message: 'Please log in first to book an appointment'
+                } 
+            });
+            return;
+        }
+        navigate('/booking');
+    };
+
     return (
         <div className="how-it-works-page">
             <Navbar />
@@ -49,7 +66,7 @@ const HowItWorks = () => {
                 </div>
 
                 <div className="booking-works-cta">
-                    <Link to="/booking" className="cta-button">Start Booking Now</Link>
+                    <button onClick={handleBookClick} className="cta-button">Start Booking Now</button>
                 </div>
             </div>
         </div>

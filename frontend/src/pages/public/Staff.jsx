@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import Navbar from '../../components/layout/Navbar';
 import placeholderImage from '../../assets/images/Hair.jpg';
 import searchIcon from '../../assets/icons/search.png';
 import downIcon from '../../assets/icons/down.png';
 import './Staff.css';
 
-const Staff = () => {
+const Staff = ({ isLandingPage = false }) => {
     const [staffMembers, setStaffMembers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -32,7 +33,7 @@ const Staff = () => {
             try {
                 const queryParams = new URLSearchParams({
                     page,
-                    limit: 8,
+                    limit: isLandingPage ? 4 : 8,
                     name: debouncedSearch,
                     specialty: specialty
                 });
@@ -50,9 +51,20 @@ const Staff = () => {
             }
         };
         fetchStaff();
-    }, [page, debouncedSearch, specialty]);
+    }, [page, debouncedSearch, specialty, isLandingPage]);
 
+    const { isAuthenticated } = useAuth();
     const handleBookNow = (staffId) => {
+        if (!isAuthenticated) {
+            navigate('/login', { 
+                state: { 
+                    from: '/booking',
+                    staffId: staffId,
+                    message: 'Please log in first to book an appointment'
+                } 
+            });
+            return;
+        }
         navigate('/booking', { state: { staffId: staffId } });
     };
 
@@ -72,8 +84,8 @@ const Staff = () => {
     };
 
     return (
-        <div className="staff-page">
-            <Navbar />
+        <div className={`staff-page ${isLandingPage ? 'is-landing' : ''}`}>
+            {!isLandingPage && <Navbar />}
             
             <header className="staff-hero">
                 <div className="hero-content">
@@ -117,7 +129,7 @@ const Staff = () => {
                     <div className="staff-container">
                         {loading ? (
                             <div className="staff-premium-grid">
-                                {[...Array(8)].map((_, i) => (
+                                {[...Array(isLandingPage ? 4 : 8)].map((_, i) => (
                                     <div key={i} className="shimmer-card"></div>
                                 ))}
                             </div>

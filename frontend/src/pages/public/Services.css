@@ -152,6 +152,10 @@
     transition: all 0.3s ease;
     display: inline-block;
     width: fit-content;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
 }
 
 .service-link:hover {
@@ -172,6 +176,10 @@
     text-decoration: none;
     transition: all 0.3s ease;
     display: inline-block;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
 }
 
 .view-all-link:hover {

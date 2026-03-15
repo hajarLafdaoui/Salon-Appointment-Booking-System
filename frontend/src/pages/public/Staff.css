@@ -21,7 +21,7 @@
 /* Hero Section */
 .staff-hero {
     background: linear-gradient(135deg, #3b2018 0%, #5d352c 100%);
-    padding: 60px 20px 40px;
+    padding: 60px 20px 0; /* Removed bottom padding */
     color: white;
     position: relative;
     overflow: hidden;
@@ -60,7 +60,7 @@
     line-height: 1.4;
     opacity: 0.85;
     font-weight: 300;
-    margin-bottom: 30px; /* Space before filters */
+    margin-bottom: 20px; /* Reduced from 30px */
     text-align: center; /* Subtitle centered */
     width: 100%;
 }
@@ -68,8 +68,8 @@
 /* Staff Container */
 .staff-container {
     max-width: 1200px;
-    margin: 40px auto 80px;
-    padding: 0 20px;
+    margin: 0 auto; /* Removed top margin (40px) and bottom margin (80px) */
+    padding: 0 20px 20px; /* Removed top padding, kept side and bottom */
     position: relative;
     z-index: 2;
 }
@@ -80,7 +80,7 @@
     justify-content: flex-start; /* Filters strictly at the START (Left) */
     align-items: center;
     gap: 15px;
-    margin-top: 20px; 
+    margin-bottom: 40px; 
     flex-wrap: nowrap;
     width: 100%;
     text-align: left; /* Ensure text alignment within container doesn't inherit centering */
@@ -171,6 +171,47 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr); /* 4 columns */
     gap: 20px;
+}
+
+/* Force one line in landing page and handle mobile with horizontal scroll */
+.is-landing {
+    min-height: auto;
+}
+
+.is-landing .staff-premium-grid {
+    display: flex;
+    overflow-x: auto;
+    gap: 20px;
+    padding-bottom: 20px;
+    margin-bottom: -20px;
+    scrollbar-width: none; /* Hide scrollbar for cleaner look */
+}
+
+.is-landing .staff-premium-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.is-landing .staff-profile-card {
+    flex: 0 0 calc(25% - 15px); /* 4 per row on desktop */
+    min-width: 280px; /* Minimum width for readability */
+}
+
+@media (max-width: 1200px) {
+    .is-landing .staff-profile-card {
+        flex: 0 0 calc(33.33% - 14px); /* 3 per row on mid screens */
+    }
+}
+
+@media (max-width: 850px) {
+    .is-landing .staff-profile-card {
+        flex: 0 0 calc(50% - 10px); /* 2 per row on tablets */
+    }
+}
+
+@media (max-width: 600px) {
+    .is-landing .staff-profile-card {
+        flex: 0 0 85%; /* 1.15 per row on mobile for peek effect */
+    }
 }
 
 /* Staff Card - Compact */
@@ -434,7 +475,7 @@
 /* Join Team Section */
 .join-team-section {
     background: white;
-    padding: 60px 20px;
+    padding: 0 20px 60px; /* Removed top padding */
     text-align: center;
     border-top: 1px solid #f0f0f0;
 }
@@ -449,7 +490,7 @@
 .staff-main-layout {
     display: flex;
     max-width: 1400px;
-    margin: 40px auto 80px;
+    margin: 0 auto; /* Removed vertical margins */
     padding: 0 20px;
     gap: 0; /* Gap handled by margin/padding */
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);

@@ -27,7 +27,12 @@ const BrowseServices = () => {
 
     const handleBookClick = (serviceId) => {
         if (!isAuthenticated) {
-            navigate('/login', { state: { from: `/booking/${serviceId}` } });
+            navigate('/login', { 
+                state: { 
+                    from: `/booking/${serviceId}`,
+                    message: 'Please log in first to book an appointment'
+                } 
+            });
         } else {
             navigate(`/booking/${serviceId}`);
         }

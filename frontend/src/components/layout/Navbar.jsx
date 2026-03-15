@@ -6,6 +6,7 @@ const Navbar = () => {
     const [isHidden, setIsHidden] = useState(false);
     const [lastScrollY, setLastScrollY] = useState(0);
     const [user, setUser] = useState(null);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -49,6 +50,16 @@ const Navbar = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [lastScrollY]);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownOpen && !event.target.closest('.user-profile-wrapper')) {
+                setDropdownOpen(false);
+            }
+        };
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, [dropdownOpen]);
+
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -58,11 +69,6 @@ const Navbar = () => {
         navigate('/');
     };
 
-    const handleBookClick = (e) => {
-        e.preventDefault();
-        alert("Please choose a service to book first.");
-        navigate('/services');
-    };
 
     return (
         <nav className={`navbar ${location.pathname === '/services' ? 'navbar--services' : ''} ${isHidden ? 'hidden' : ''}`}>
@@ -72,7 +78,23 @@ const Navbar = () => {
                     <Link to="/" className="nav-link">Home</Link>
                     <Link to="/services" className="nav-link">Services</Link>
                     <Link to="/staff" className="nav-link">Staff</Link>
-                    {user && <Link to="/my-appointments" className="nav-link">My Appointments</Link>}
+                    <button 
+                        onClick={() => {
+                            if (!user) {
+                                navigate('/login', { 
+                                    state: { 
+                                        from: '/booking',
+                                        message: 'Please log in first to book an appointment'
+                                    } 
+                                });
+                            } else {
+                                navigate('/booking');
+                            }
+                        }} 
+                        className="nav-link"
+                    >
+                        Booking
+                    </button>
                 </div>
 
                 {/* Center Logo */}
@@ -83,16 +105,36 @@ const Navbar = () => {
                 {/* Right Navigation Links and Button */}
                 <div className="navbar-right">
                     {user ? (
-                        <>
-                            <Link to="/profile" className="nav-link">Profile</Link>
-                            <button onClick={handleLogout} className="nav-link logout-btn">Logout</button>
-                            <button onClick={handleBookClick} className="btn-primary">Book Appointment</button>
-                        </>
+                        <div className="user-profile-wrapper">
+                            <div 
+                                className="user-avatar" 
+                                onClick={() => setDropdownOpen(!dropdownOpen)}
+                            >
+                                {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                            
+                            {dropdownOpen && (
+                                <div className="user-dropdown">
+                                    <div className="dropdown-header">
+                                        <div className="header-avatar">
+                                            {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                                        </div>
+                                        <span className="user-name-display">{user.name}</span>
+                                    </div>
+                                    <div className="dropdown-divider" />
+                                    <Link to="/my-appointments" className="dropdown-item" onClick={() => setDropdownOpen(false)}>My Appointments</Link>
+                                    <Link to="/profile" className="dropdown-item" onClick={() => setDropdownOpen(false)}>Profile</Link>
+                                    <button className="dropdown-item" onClick={() => {
+                                        setDropdownOpen(false);
+                                        // future: toggle change password modal
+                                    }}>Change Password</button>
+                                    <div className="dropdown-divider" />
+                                    <button onClick={handleLogout} className="dropdown-item logout-item">Logout</button>
+                                </div>
+                            )}
+                        </div>
                     ) : (
-                        <>
-                            <Link to="/login" className="nav-link">Login</Link>
-                            <Link to="/register" className="btn-primary">Sign Up</Link>
-                        </>
+                        <Link to="/login" className="btn-primary">Log In</Link>
                     )}
                 </div>
             </div>

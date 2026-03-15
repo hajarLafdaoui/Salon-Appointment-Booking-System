@@ -167,18 +167,18 @@
 /* Services Section */
 .services-section {
     background-color: #f3efe8;
-    padding: 2rem 2rem 4rem 2rem;
+    padding: 3rem 2rem;
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    min-height: auto;
 }
 
 .services-header {
     text-align: center;
-    margin-bottom: 3rem;
+    margin-bottom: 1.5rem;
     max-width: 600px;
     padding-top: 0;
 }
@@ -326,7 +326,7 @@
 
 .services-footer {
     text-align: center;
-    margin-top: 2rem;
+    margin-top: 1rem;
 }
 
 .view-all-link {

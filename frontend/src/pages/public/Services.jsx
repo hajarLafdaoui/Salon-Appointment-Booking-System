@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import Navbar from '../../components/layout/Navbar';
 import hairImage from '../../assets/images/Hair.jpg';
 import skincareImage from '../../assets/images/Skincare.jpg';
@@ -11,6 +12,23 @@ import './Services.css';
 
 const Services = () => {
     const sliderRef = useRef(null);
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+
+    const handleBookClick = (e, serviceId = null) => {
+        if (e) e.preventDefault();
+        const targetPath = serviceId ? `/booking/${serviceId}` : '/booking';
+        if (!isAuthenticated) {
+            navigate('/login', { 
+                state: { 
+                    from: targetPath,
+                    message: 'Please log in first to book an appointment'
+                } 
+            });
+            return;
+        }
+        navigate(targetPath);
+    };
 
     const baseServices = [
         {
@@ -97,7 +115,13 @@ const Services = () => {
                                 <div className="service-content">
                                     <h3 className="service-title">{service.title}</h3>
                                     <p className="service-description">{service.description}</p>
-                                    <Link to="/booking" className="service-link">Explore →</Link>
+                                    <button 
+                                        onClick={(e) => handleBookClick(e, service.id)} 
+                                        className="service-link"
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                    >
+                                        Explore →
+                                    </button>
                                 </div>
                             </div>
                         ))}
@@ -105,7 +129,7 @@ const Services = () => {
                 </div>
 
                 <div className="services-footer">
-                    <Link to="/booking" className="view-all-link">Book a Service →</Link>
+                    <button onClick={(e) => handleBookClick(e)} className="view-all-link">Book a Service →</button>
                 </div>
             </div>
         </div>

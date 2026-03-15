@@ -19,8 +19,9 @@ const Login = () => {
     const location = useLocation();
     const { login } = useAuth();
     
-    // Get the destination from state or default to dashboard/home
+    // Get the destination and message from state
     const from = location.state?.from || null;
+    const redirectMessage = location.state?.message || null;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -165,6 +166,7 @@ const Login = () => {
                         </p>
                     </div>
 
+                    {redirectMessage && <div className="auth-message">{redirectMessage}</div>}
                     {error && <div className="auth-error">{error}</div>}
 
                     <form onSubmit={handleSubmit} className="login-form">

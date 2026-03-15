@@ -1,6 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
+import { useAuth } from '../../hooks/useAuth';
 import Footer from '../../components/layout/Footer';
 import HowItWorks from './HowItWorks';
 import Staff from './Staff';
@@ -8,72 +9,59 @@ import Testimonials from './Testimonials';
 import CTA from './CTA';
 import heroImage from '../../assets/images/8.jpg';
 import hairImage from '../../assets/images/Hair.jpg';
-import skincareImage from '../../assets/images/Skincare.jpg';
-import nailsImage from '../../assets/images/Nails.jpg';
-import makeupImage from '../../assets/images/Makeup.jpg';
-import browsImage from '../../assets/images/Brows.jpg';
-import spaImage from '../../assets/images/Spa.jpg';
 import './Home.css';
 
 const Home = () => {
     const sliderRef = useRef(null);
     const navigate = useNavigate();
+    const [services, setServices] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const handleBookClick = (e) => {
-        e.preventDefault();
-        alert("Please choose a service to book first.");
-        navigate('/services');
+    const { isAuthenticated } = useAuth();
+    
+    const handleBookClick = (e, serviceId = null) => {
+        if (e) e.preventDefault();
+        
+        const targetPath = serviceId ? `/booking/${serviceId}` : '/booking';
+        
+        if (!isAuthenticated) {
+            navigate('/login', { 
+                state: { 
+                    from: targetPath,
+                    message: 'Please log in first to book an appointment'
+                } 
+            });
+            return;
+        }
+        navigate(targetPath);
     };
 
-    const baseServices = [
-        {
-            id: 1,
-            title: 'Hair',
-            description: 'Haircuts, styling, coloring and treatments.',
-            image: hairImage
-        },
-        {
-            id: 2,
-            title: 'Skincare',
-            description: 'Facials and treatments for glowing healthy skin.',
-            image: skincareImage
-        },
-        {
-            id: 3,
-            title: 'Nails',
-            description: 'Manicure, pedicure and nail beauty services.',
-            image: nailsImage
-        },
-        {
-            id: 4,
-            title: 'Makeup',
-            description: 'Professional makeup for events and special occasions.',
-            image: makeupImage
-        },
-        {
-            id: 5,
-            title: 'Brows & Lashes',
-            description: 'Eyebrow shaping and eyelash enhancement services.',
-            image: browsImage
-        },
-        {
-            id: 6,
-            title: 'Spa & Massage',
-            description: 'Relaxing body treatments and massage therapy.',
-            image: spaImage
-        }
-    ];
+    useEffect(() => {
+        const fetchServices = async () => {
+            try {
+                const response = await fetch('http://localhost:5000/api/services');
+                const data = await response.json();
+                
+                const mappedServices = data.map(service => ({
+                    id: service._id,
+                    title: service.name,
+                    description: service.description,
+                    image: service.image || hairImage 
+                }));
+                
+                setServices([...mappedServices, ...mappedServices]);
+            } catch (error) {
+                console.error("Error fetching services:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const services = [...baseServices, ...baseServices];
+        fetchServices();
+    }, []);
 
     useEffect(() => {
-        // Preload images for smoother animation
-        services.forEach(service => {
-            const img = new Image();
-            img.src = service.image;
-        });
-
-        if (sliderRef.current) {
+        if (!loading && services.length > 0 && sliderRef.current) {
             sliderRef.current.classList.add('animate');
         }
 
@@ -82,7 +70,7 @@ const Home = () => {
                 sliderRef.current.classList.remove('animate');
             }
         };
-    }, [services]);
+    }, [services, loading]);
 
     return (
         <div className="landing-page">
@@ -97,7 +85,7 @@ const Home = () => {
                             <p className="hero-subtext">Choose your service, pick a stylist, and reserve your time instantly. No phone calls required.</p>
 
                             <div className="hero-buttons">
-                                <button onClick={handleBookClick} className="btn-primary">Book Appointment</button>
+                                <button onClick={(e) => handleBookClick(e)} className="btn-primary">Book Appointment</button>
                                 <Link to="/services" className="btn-secondary">View Services</Link>
                             </div>
 
@@ -136,7 +124,13 @@ const Home = () => {
                                 <div className="service-content">
                                     <h3 className="service-title">{service.title}</h3>
                                     <p className="service-description">{service.description}</p>
-                                    <Link to="/booking" className="service-link">Explore →</Link>
+                                    <button 
+                                        onClick={(e) => handleBookClick(e, service.id)} 
+                                        className="service-link"
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                                    >
+                                        Explore →
+                                    </button>
                                 </div>
                             </div>
                         ))}
@@ -148,19 +142,10 @@ const Home = () => {
                 </div>
             </div>
 
-            {/* How Booking Works Component */}
             <HowItWorks />
-
-            {/* Staff Component */}
-            <Staff />
-
-            {/* Testimonials Component */}
+            <Staff isLandingPage={true} />
             <Testimonials />
-
-            {/* CTA Component */}
             <CTA />
-
-            {/* Footer Component */}
             <Footer />
         </div>
     );

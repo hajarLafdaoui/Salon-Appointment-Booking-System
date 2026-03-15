@@ -1,10 +1,13 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import instagramIcon from '../../assets/icons/instagram.png';
 import facebookIcon from '../../assets/icons/facebook.png';
 import './Footer.css';
 
 const Footer = () => {
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+
     return (
         <footer className="footer">
             <div className="footer-content">
@@ -22,7 +25,27 @@ const Footer = () => {
                         <li><Link to="/services">Services</Link></li>
                         <li><Link to="/staff">Staff</Link></li>
                         <li><Link to="/how-it-works">How It Works</Link></li>
-                        <li><Link to="/booking">Book Appointment</Link></li>
+                        <li>
+                            <button 
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    if (!isAuthenticated) {
+                                        navigate('/login', { 
+                                            state: { 
+                                                from: '/booking',
+                                                message: 'Please log in first to book an appointment'
+                                            } 
+                                        });
+                                        return;
+                                    }
+                                    navigate('/booking');
+                                }} 
+                                className="footer-booking-btn"
+                                style={{ background: 'none', border: 'none', color: 'inherit', font: 'inherit', cursor: 'pointer', padding: 0 }}
+                            >
+                                Book Appointment
+                            </button>
+                        </li>
                     </ul>
                 </div>
 

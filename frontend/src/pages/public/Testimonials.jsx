@@ -80,11 +80,23 @@ const Testimonials = () => {
                 ))}
             </div>
 
-            <div className="testimonials-footer">
-                <button className="arrow-button prev-button" onClick={handlePrev} aria-label="Previous testimonials">
+            <div className="pagination-controls">
+                <button 
+                    className="page-btn" 
+                    onClick={handlePrev} 
+                    aria-label="Previous testimonials"
+                >
                     ←
                 </button>
-                <button className="arrow-button next-button" onClick={handleNext} aria-label="Next testimonials">
+                <div className="page-numbers">
+                    {/* Visual indicators for testimonials index if needed, or leave empty if just arrows */}
+                    <span className="page-number active">{Math.floor(currentIndex / 1) + 1}</span>
+                </div>
+                <button 
+                    className="page-btn" 
+                    onClick={handleNext} 
+                    aria-label="Next testimonials"
+                >
                     →
                 </button>
             </div>

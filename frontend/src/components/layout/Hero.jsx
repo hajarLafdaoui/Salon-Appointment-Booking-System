@@ -1,8 +1,25 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import './Hero.css';
 
 const Hero = () => {
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+
+    const handleBookClick = (e) => {
+        e.preventDefault();
+        if (!isAuthenticated) {
+            navigate('/login', { 
+                state: { 
+                    from: '/booking',
+                    message: 'Please log in first to book an appointment'
+                } 
+            });
+            return;
+        }
+        navigate('/booking');
+    };
+
     return (
         <section className="hero">
             <div className="hero-container">
@@ -12,7 +29,7 @@ const Hero = () => {
                     <p className="hero-subtext">Choose your service, pick a stylist, and reserve your time instantly. No phone calls required.</p>
 
                     <div className="hero-buttons">
-                        <Link to="/booking" className="btn-primary">Book Appointment</Link>
+                        <button onClick={handleBookClick} className="btn-primary">Book Appointment</button>
                         <Link to="/services" className="btn-secondary">View Services</Link>
                     </div>
 
