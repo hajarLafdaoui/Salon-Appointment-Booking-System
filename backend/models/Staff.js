@@ -6,15 +6,64 @@ const staffSchema = mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      unique: true, // one-to-one
+      unique: true
     },
-    specialty: { type: String },
-    bio: { type: String },
-    isActive: { type: Boolean, default: true },
-    // services offered will be handled via reference in Service or separate collection
+
+    name: {
+      type: String,
+      required: true
+    },
+
+    image: {
+      type: String,
+      default: "https://via.placeholder.com/300"
+    },
+
+    specialty: {
+      type: String,
+      required: true
+    },
+
+    bio: {
+      type: String
+    },
+
+    experienceYears: {
+      type: Number,
+      default: 0
+    },
+
+    rating: {
+      type: Number,
+      default: 4.5
+    },
+
+    services: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Service'
+      }
+    ],
+
+    workingDays: [
+      {
+        type: String
+      }
+    ],
+
+    workingHours: {
+      start: String,
+      end: String
+    },
+
+    isActive: {
+      type: Boolean,
+      default: true
+    }
   },
   { timestamps: true }
 );
 
 const Staff = mongoose.model('Staff', staffSchema);
+
 module.exports = Staff;

@@ -1,99 +1,111 @@
 const Staff = require('../models/Staff');
-const User = require('../models/User');
 
-// @desc    Create staff profile (admin only)
-// @route   POST /api/staff
-// @access  Private/Admin
+
+// CREATE STAFF (Admin only)
 const createStaff = async (req, res) => {
   try {
-    const { userId, specialty, bio } = req.body;
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    const staff = new Staff(req.body);
 
-    // Check if user already has staff profile
-    const existing = await Staff.findOne({ user: userId });
-    if (existing) return res.status(400).json({ message: 'Staff profile already exists' });
+    const createdStaff = await staff.save();
 
-    // Update user role to staff if not already
-    if (user.role !== 'staff') {
-      user.role = 'staff';
-      await user.save();
-    }
-
-    const staff = await Staff.create({ user: userId, specialty, bio });
-    res.status(201).json(staff);
+    res.status(201).json(createdStaff);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get all staff
-// @route   GET /api/staff
-// @access  Public
+
+
+// GET ALL STAFF (Public for booking page)
 const getAllStaff = async (req, res) => {
   try {
-    const staff = await Staff.find({ isActive: true }).populate('user', 'name email phone avatar');
+    const staff = await Staff.find({ isActive: true })
+      .populate("services")
+      .populate("user", "name email");
+
     res.json(staff);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get single staff by ID
-// @route   GET /api/staff/:id
-// @access  Public
+
+
+// GET STAFF BY ID
 const getStaffById = async (req, res) => {
   try {
-    const staff = await Staff.findById(req.params.id).populate('user', 'name email phone avatar');
+    const staff = await Staff.findById(req.params.id)
+      .populate("services")
+      .populate("user", "name email");
+
     if (staff) {
       res.json(staff);
     } else {
-      res.status(404).json({ message: 'Staff not found' });
+      res.status(404).json({ message: "Staff not found" });
     }
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Update staff profile
-// @route   PUT /api/staff/:id
-// @access  Private/StaffOrAdmin (staff can update own profile)
+
+
+// UPDATE STAFF (Admin or that staff)
 const updateStaff = async (req, res) => {
   try {
     const staff = await Staff.findById(req.params.id);
-    if (!staff) return res.status(404).json({ message: 'Staff not found' });
 
-    // Check if user is admin or the owner of this staff profile
-    if (req.user.role !== 'admin' && staff.user.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: 'Not authorized' });
+    if (!staff) {
+      return res.status(404).json({ message: "Staff not found" });
     }
 
+    staff.name = req.body.name || staff.name;
+    staff.image = req.body.image || staff.image;
     staff.specialty = req.body.specialty || staff.specialty;
     staff.bio = req.body.bio || staff.bio;
-    staff.isActive = req.body.isActive !== undefined ? req.body.isActive : staff.isActive;
+    staff.experienceYears = req.body.experienceYears || staff.experienceYears;
+    staff.rating = req.body.rating || staff.rating;
+    staff.services = req.body.services || staff.services;
+    staff.workingDays = req.body.workingDays || staff.workingDays;
+    staff.workingHours = req.body.workingHours || staff.workingHours;
+    staff.isActive = req.body.isActive ?? staff.isActive;
 
-    const updated = await staff.save();
-    res.json(updated);
+    const updatedStaff = await staff.save();
+
+    res.json(updatedStaff);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Delete staff profile (admin only)
-// @route   DELETE /api/staff/:id
-// @access  Private/Admin
+
+
+// DELETE STAFF (Admin only)
 const deleteStaff = async (req, res) => {
   try {
     const staff = await Staff.findById(req.params.id);
-    if (staff) {
-      await staff.remove();
-      res.json({ message: 'Staff removed' });
-    } else {
-      res.status(404).json({ message: 'Staff not found' });
+
+    if (!staff) {
+      return res.status(404).json({ message: "Staff not found" });
     }
+
+    await staff.deleteOne();
+
+    res.json({ message: "Staff removed" });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-module.exports = { createStaff, getAllStaff, getStaffById, updateStaff, deleteStaff };
+
+
+module.exports = {
+  createStaff,
+  getAllStaff,
+  getStaffById,
+  updateStaff,
+  deleteStaff
+};

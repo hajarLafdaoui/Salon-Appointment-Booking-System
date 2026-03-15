@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import heroImage from '../../assets/images/2.jpg';
 import './Auth.css';
 
@@ -15,6 +16,11 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const { login } = useAuth();
+    
+    // Get the destination from state or default to dashboard/home
+    const from = location.state?.from || null;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -62,18 +68,17 @@ const Login = () => {
                     return;
                 }
 
-                localStorage.setItem('token', data.token);
-                localStorage.setItem('user', JSON.stringify({
+                login({
                     _id: data._id,
                     name: data.name,
                     email: data.email,
                     role: data.role
-                }));
-
-                // Trigger storage event for other components
-                window.dispatchEvent(new Event('storage'));
-
-                if (data.role === 'staff') {
+                }, data.token);
+                
+                // Navigate to 'from' if it exists, otherwise use role-based logic
+                if (from) {
+                    navigate(from);
+                } else if (data.role === 'staff') {
                     navigate('/staff/dashboard');
                 } else if (data.role === 'admin') {
                     navigate('/admin/dashboard');

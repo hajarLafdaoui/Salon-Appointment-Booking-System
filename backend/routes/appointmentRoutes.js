@@ -5,6 +5,7 @@ const {
   getAllAppointments,
   updateStatus,
   cancelAppointment,
+  getStaffBookedSlots,
 } = require('../controllers/appointmentController');
 const { protect, admin, staffOrAdmin } = require('../middleware/authMiddleware');
 const router = express.Router();
@@ -14,6 +15,7 @@ router.route('/')
   .get(protect, admin, getAllAppointments);
 
 router.get('/my', protect, getMyAppointments);
+router.get('/staff/:staffId', protect, getStaffBookedSlots);
 
 router.put('/:id/status', protect, staffOrAdmin, updateStatus);
 router.delete('/:id', protect, cancelAppointment);

@@ -122,6 +122,35 @@ const updateStatus = async (req, res) => {
   }
 };
 
+// @desc    Get booked slots for a staff member on a specific date
+// @route   GET /api/appointments/staff/:staffId
+// @access  Public or Private (customer checking availability)
+const getStaffBookedSlots = async (req, res) => {
+  try {
+    const { staffId } = req.params;
+    const { date } = req.query;
+
+    if (!staffId || !date) {
+      return res.status(400).json({ message: 'Staff ID and date are required' });
+    }
+
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const appointments = await Appointment.find({
+      staff: staffId,
+      date: { $gte: startOfDay, $lte: endOfDay },
+      status: { $ne: 'cancelled' }
+    }).select('date');
+
+    res.json(appointments);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Cancel appointment (customer can cancel their own)
 // @route   DELETE /api/appointments/:id
 // @access  Private (customer or admin)
@@ -150,4 +179,5 @@ module.exports = {
   getAllAppointments,
   updateStatus,
   cancelAppointment,
+  getStaffBookedSlots,
 };

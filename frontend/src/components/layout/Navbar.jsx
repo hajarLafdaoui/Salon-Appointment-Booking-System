@@ -58,6 +58,12 @@ const Navbar = () => {
         navigate('/');
     };
 
+    const handleBookClick = (e) => {
+        e.preventDefault();
+        alert("Please choose a service to book first.");
+        navigate('/services');
+    };
+
     return (
         <nav className={`navbar ${location.pathname === '/services' ? 'navbar--services' : ''} ${isHidden ? 'hidden' : ''}`}>
             <div className="navbar-container">
@@ -79,7 +85,7 @@ const Navbar = () => {
                         <>
                             <Link to="/profile" className="nav-link">Profile</Link>
                             <button onClick={handleLogout} className="nav-link logout-btn">Logout</button>
-                            <Link to="/booking" className="btn-primary">Book Appointment</Link>
+                            <button onClick={handleBookClick} className="btn-primary">Book Appointment</button>
                         </>
                     ) : (
                         <>

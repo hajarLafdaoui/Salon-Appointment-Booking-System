@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
 import HowItWorks from './HowItWorks';
@@ -17,6 +17,13 @@ import './Home.css';
 
 const Home = () => {
     const sliderRef = useRef(null);
+    const navigate = useNavigate();
+
+    const handleBookClick = (e) => {
+        e.preventDefault();
+        alert("Please choose a service to book first.");
+        navigate('/services');
+    };
 
     const baseServices = [
         {
@@ -90,7 +97,7 @@ const Home = () => {
                             <p className="hero-subtext">Choose your service, pick a stylist, and reserve your time instantly. No phone calls required.</p>
 
                             <div className="hero-buttons">
-                                <Link to="/booking" className="btn-primary">Book Appointment</Link>
+                                <button onClick={handleBookClick} className="btn-primary">Book Appointment</button>
                                 <Link to="/services" className="btn-secondary">View Services</Link>
                             </div>
 

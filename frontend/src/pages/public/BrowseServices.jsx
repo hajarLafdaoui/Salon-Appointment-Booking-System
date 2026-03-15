@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
 import { useFetch } from '../../hooks/useFetch';
+import { useAuth } from '../../hooks/useAuth';
 import leftArrow from '../../assets/icons/left-arrow.png';
 import rightArrow from '../../assets/icons/right-arrow.png';
 import './BrowseServices.css';
 
 const BrowseServices = () => {
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
     const [selectedCategory, setSelectedCategory] = useState('All');
+    const [searchQuery, setSearchQuery] = useState('');
     const [filteredServices, setFilteredServices] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 12; // 3 rows x 4 columns
@@ -21,12 +25,28 @@ const BrowseServices = () => {
             : `/api/services?category=${selectedCategory}`
     );
 
+    const handleBookClick = (serviceId) => {
+        if (!isAuthenticated) {
+            navigate('/login', { state: { from: `/booking/${serviceId}` } });
+        } else {
+            navigate(`/booking/${serviceId}`);
+        }
+    };
+
     useEffect(() => {
         if (services) {
-            setFilteredServices(services);
+            let filtered = services;
+            if (searchQuery.trim() !== '') {
+                const query = searchQuery.toLowerCase();
+                filtered = services.filter(service => 
+                    service.name.toLowerCase().includes(query) ||
+                    (service.description && service.description.toLowerCase().includes(query))
+                );
+            }
+            setFilteredServices(filtered);
             setCurrentPage(1);
         }
-    }, [services]);
+    }, [services, searchQuery]);
 
     // Pagination logic
     const totalPages = Math.ceil(filteredServices.length / itemsPerPage);
@@ -53,17 +73,32 @@ const BrowseServices = () => {
         <div className="browse-services-page">
             <Navbar />
 
-            {/* Category Tabs - Below Navbar on new line */}
-            <div className="category-tabs-container">
-                {categories.map((category) => (
-                    <button
-                        key={category}
-                        className={`category-tab ${selectedCategory === category ? 'active' : ''}`}
-                        onClick={() => setSelectedCategory(category)}
-                    >
-                        {category}
-                    </button>
-                ))}
+            {/* Header Controls - Categories & Search */}
+            <div className="browse-header-controls">
+                <div className="category-tabs-container">
+                    {categories.map((category) => (
+                        <button
+                            key={category}
+                            className={`category-tab ${selectedCategory === category ? 'active' : ''}`}
+                            onClick={() => setSelectedCategory(category)}
+                        >
+                            {category}
+                        </button>
+                    ))}
+                </div>
+                <div className="search-input-wrapper">
+                    <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input 
+                        type="text" 
+                        className="service-search-input" 
+                        placeholder="Search services..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
             </div>
 
             {/* Services Grid */}
@@ -82,15 +117,26 @@ const BrowseServices = () => {
                                 {currentServices.map((service) => (
                                     <div key={service._id} className="service-card">
                                         <div className="service-card-content">
-                                            <h3 className="service-name">{service.name}</h3>
+                                            <div className="service-header">
+                                                <h3 className="service-name">{service.name}</h3>
+                                                {service.duration && (
+                                                    <div className="service-duration">
+                                                        <svg className="watch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                                            <circle cx="12" cy="12" r="10"></circle>
+                                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                                        </svg>
+                                                        <span>{service.duration} min</span>
+                                                    </div>
+                                                )}
+                                            </div>
                                             <div className="service-spacer" />
                                             <p className="service-price">${service.price}</p>
-                                            <Link
-                                                to={`/booking/${service._id}`}
+                                            <button
                                                 className="service-book-link"
+                                                onClick={() => handleBookClick(service._id)}
                                             >
                                                 Book appointment
-                                            </Link>
+                                            </button>
                                         </div>
                                         {service.image && (
                                             <div className="service-image-wrapper">
