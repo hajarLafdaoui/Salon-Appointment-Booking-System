@@ -71,26 +71,26 @@ const Navbar = () => {
 
 
     return (
-        <nav className={`navbar ${['/services', '/my-appointments', '/login', '/register', '/forgot-password', '/booking', '/staff'].includes(location.pathname) ? 'navbar--services' : ''} ${isHidden ? 'hidden' : ''}`}>
+        <nav className={`navbar ${['/', '/staff', '/login', '/register'].includes(location.pathname) ? 'navbar--white' : ''} ${isHidden ? 'hidden' : ''}`}>
             <div className="navbar-container">
                 {/* Left Navigation Links */}
                 <div className="navbar-left">
                     <Link to="/" className="nav-link">Home</Link>
                     <Link to="/services" className="nav-link">Services</Link>
                     <Link to="/staff" className="nav-link">Staff</Link>
-                    <button 
+                    <button
                         onClick={() => {
                             if (!user) {
-                                navigate('/login', { 
-                                    state: { 
+                                navigate('/login', {
+                                    state: {
                                         from: '/booking',
                                         message: 'Please log in first to book an appointment'
-                                    } 
+                                    }
                                 });
                             } else {
                                 navigate('/booking');
                             }
-                        }} 
+                        }}
                         className="nav-link"
                     >
                         Booking
@@ -106,13 +106,13 @@ const Navbar = () => {
                 <div className="navbar-right">
                     {user ? (
                         <div className="user-profile-wrapper">
-                            <div 
-                                className="user-avatar" 
+                            <div
+                                className="user-avatar"
                                 onClick={() => setDropdownOpen(!dropdownOpen)}
                             >
                                 {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
                             </div>
-                            
+
                             {dropdownOpen && (
                                 <div className="user-dropdown">
                                     <div className="dropdown-header">
@@ -124,18 +124,14 @@ const Navbar = () => {
                                     <div className="dropdown-divider" />
                                     <Link to="/my-appointments" className="dropdown-item" onClick={() => setDropdownOpen(false)}>My Appointments</Link>
                                     <Link to="/profile" className="dropdown-item" onClick={() => setDropdownOpen(false)}>Profile</Link>
-                                    <button className="dropdown-item" onClick={() => {
-                                        setDropdownOpen(false);
-                                        // future: toggle change password modal
-                                    }}>Change Password</button>
                                     <div className="dropdown-divider" />
                                     <button onClick={handleLogout} className="dropdown-item logout-item">Logout</button>
                                 </div>
                             )}
                         </div>
-                    ) : (
+                    ) : location.pathname !== '/login' && location.pathname !== '/register' ? (
                         <Link to="/login" className="btn-primary">Log In</Link>
-                    )}
+                    ) : null}
                 </div>
             </div>
         </nav>

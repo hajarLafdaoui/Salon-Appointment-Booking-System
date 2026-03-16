@@ -28,11 +28,11 @@ const BrowseServices = () => {
 
     const handleBookClick = (serviceId) => {
         if (!isAuthenticated) {
-            navigate('/login', { 
-                state: { 
+            navigate('/login', {
+                state: {
                     from: `/booking/${serviceId}`,
                     message: 'Please log in first to book an appointment'
-                } 
+                }
             });
         } else {
             navigate(`/booking/${serviceId}`);
@@ -44,7 +44,7 @@ const BrowseServices = () => {
             let filtered = services;
             if (searchQuery.trim() !== '') {
                 const query = searchQuery.toLowerCase();
-                filtered = services.filter(service => 
+                filtered = services.filter(service =>
                     service.name.toLowerCase().includes(query) ||
                     (service.description && service.description.toLowerCase().includes(query))
                 );
@@ -97,10 +97,10 @@ const BrowseServices = () => {
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
-                    <input 
-                        type="text" 
-                        className="service-search-input" 
-                        placeholder="Search services..." 
+                    <input
+                        type="text"
+                        className="service-search-input"
+                        placeholder="Search services..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -122,9 +122,13 @@ const BrowseServices = () => {
                             <div className="services-grid">
                                 {currentServices.map((service) => (
                                     <div key={service._id} className="service-card">
-                                        <div className="service-card-content">
-                                            <div className="service-header">
-                                                <h3 className="service-name">{service.name}</h3>
+                                        <div className="service-content">
+                                            <h3 className="service-name">{service.name}</h3>
+                                            {service.description && (
+                                                <p className="service-description">{service.description}</p>
+                                            )}
+                                            <div className="service-footer">
+                                                <p className="service-price">${service.price}</p>
                                                 {service.duration && (
                                                     <div className="service-duration">
                                                         <svg className="watch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -135,8 +139,6 @@ const BrowseServices = () => {
                                                     </div>
                                                 )}
                                             </div>
-                                            <div className="service-spacer" />
-                                            <p className="service-price">${service.price}</p>
                                             <button
                                                 className="service-book-link"
                                                 onClick={() => handleBookClick(service._id)}

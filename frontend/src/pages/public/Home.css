@@ -248,14 +248,16 @@
 }
 
 .service-card {
-    flex: 0 0 calc(35% - 1.5rem); /* Wider for horizontal cards */
+    flex: 0 0 calc(35% - 1.5rem);
+    /* Wider for horizontal cards */
     background-color: white;
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s ease;
     display: flex;
-    flex-direction: row-reverse; /* Image to the right */
+    flex-direction: row-reverse;
+    /* Image to the right */
     height: 180px;
     will-change: transform;
 }
@@ -266,7 +268,7 @@
 }
 
 .service-image-wrapper {
-    width: 45%; 
+    width: 45%;
     height: 100%;
     overflow: hidden;
     background-color: #f0f0f0;
@@ -296,7 +298,7 @@
 
 .service-title {
     font-family: 'Glacial Indifference', sans-serif;
-    font-size: 1rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #333;
     margin: 0;

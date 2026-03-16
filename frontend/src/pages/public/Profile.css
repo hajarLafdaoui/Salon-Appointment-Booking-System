@@ -14,38 +14,47 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .profile-header-premium {
     display: flex;
     align-items: center;
-    gap: 2rem;
-    margin-bottom: 3rem;
-    padding: 2rem;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
     background: white;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
 .profile-avatar-large {
-    width: 100px;
-    height: 100px;
+    width: 50px;
+    height: 50px;
     background: #bf5128;
     color: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3rem;
-    font-weight: 700;
+    font-size: 1.5rem;
+    font-weight: 600;
     box-shadow: 0 5px 15px rgba(191, 81, 40, 0.3);
+    margin-top: -5px;
+    margin-bottom: 32px;
 }
 
 .profile-title-section h1 {
     font-family: 'Glacial Indifference', sans-serif;
-    font-size: 2.2rem;
+    font-size: 1.5rem;
     color: #2d3436;
     margin: 0;
 }
@@ -63,20 +72,27 @@
     letter-spacing: 1px;
 }
 
+.profile-description {
+    font-size: 0.9rem;
+    color: #636e72;
+    margin: 8px 0 0 0;
+    line-height: 1.4;
+}
+
 .profile-main-grid {
     display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 2rem;
+    grid-template-columns: 250px 1fr;
+    gap: 1.5rem;
 }
 
 .profile-stats-card {
     background: white;
-    padding: 2rem;
+    padding: 1.5rem;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
     height: fit-content;
 }
 
@@ -86,13 +102,13 @@
 
 .stat-number {
     display: block;
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
     color: #bf5128;
 }
 
 .stat-label {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #636e72;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -100,7 +116,7 @@
 
 .profile-info-card {
     background: white;
-    padding: 2.5rem;
+    padding: 2rem;
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
@@ -109,11 +125,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 .card-header h2 {
     font-family: 'Glacial Indifference', sans-serif;
+    font-size: 1.5rem;
     color: #2d3436;
     margin: 0;
 }
@@ -138,13 +155,13 @@
 .profile-form {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .form-group-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .form-input-group {
@@ -188,8 +205,15 @@
 }
 
 @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .password-update-section h3 {
@@ -246,7 +270,7 @@
     .profile-main-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .profile-stats-card {
         flex-direction: row;
         justify-content: space-around;
@@ -258,7 +282,7 @@
     .form-group-row {
         grid-template-columns: 1fr;
     }
-    
+
     .profile-header-premium {
         flex-direction: column;
         text-align: center;

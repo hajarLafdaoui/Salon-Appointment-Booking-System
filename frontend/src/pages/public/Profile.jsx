@@ -12,7 +12,7 @@ const Profile = () => {
     const [fetching, setFetching] = useState(true);
     const [editMode, setEditMode] = useState(false);
     const [stats, setStats] = useState({ appointments: 0, spent: 0 });
-    
+
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -114,7 +114,7 @@ const Profile = () => {
     return (
         <div className="profile-page-container">
             <Navbar />
-            
+
             <main className="profile-content">
                 <div className="profile-header-premium">
                     <div className="profile-avatar-large">
@@ -123,6 +123,7 @@ const Profile = () => {
                     <div className="profile-title-section">
                         <h1>{user.name}</h1>
                         <p className="profile-role-badge">{user.role}</p>
+                        <p className="profile-description">Welcome back! Manage your profile information and view your appointment history below.</p>
                     </div>
                 </div>
 
@@ -154,8 +155,8 @@ const Profile = () => {
                             <div className="form-group-row">
                                 <div className="form-input-group">
                                     <label>Full Name</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         name="name"
                                         value={formData.name}
                                         onChange={handleChange}
@@ -165,8 +166,8 @@ const Profile = () => {
                                 </div>
                                 <div className="form-input-group">
                                     <label>Email Address</label>
-                                    <input 
-                                        type="email" 
+                                    <input
+                                        type="email"
                                         name="email"
                                         value={formData.email}
                                         onChange={handleChange}
@@ -179,8 +180,8 @@ const Profile = () => {
                             <div className="form-group-row">
                                 <div className="form-input-group">
                                     <label>Phone Number</label>
-                                    <input 
-                                        type="text" 
+                                    <input
+                                        type="text"
                                         name="phone"
                                         value={formData.phone}
                                         onChange={handleChange}
@@ -196,8 +197,8 @@ const Profile = () => {
                                     <div className="form-group-row">
                                         <div className="form-input-group">
                                             <label>New Password</label>
-                                            <input 
-                                                type="password" 
+                                            <input
+                                                type="password"
                                                 name="newPassword"
                                                 value={formData.newPassword}
                                                 onChange={handleChange}
@@ -206,8 +207,8 @@ const Profile = () => {
                                         </div>
                                         <div className="form-input-group">
                                             <label>Confirm New Password</label>
-                                            <input 
-                                                type="password" 
+                                            <input
+                                                type="password"
                                                 name="confirmPassword"
                                                 value={formData.confirmPassword}
                                                 onChange={handleChange}
@@ -220,12 +221,12 @@ const Profile = () => {
 
                             {editMode && (
                                 <div className="form-actions-premium">
-                                    <button 
-                                        type="button" 
-                                        className="btn-cancel" 
+                                    <button
+                                        type="button"
+                                        className="btn-cancel"
                                         onClick={() => {
                                             setEditMode(false);
-                                            setFormData({...formData, currentPassword: '', newPassword: '', confirmPassword: ''});
+                                            setFormData({ ...formData, currentPassword: '', newPassword: '', confirmPassword: '' });
                                         }}
                                     >
                                         Cancel
