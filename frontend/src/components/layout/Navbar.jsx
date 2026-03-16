@@ -71,7 +71,7 @@ const Navbar = () => {
 
 
     return (
-        <nav className={`navbar ${location.pathname === '/services' ? 'navbar--services' : ''} ${isHidden ? 'hidden' : ''}`}>
+        <nav className={`navbar ${['/services', '/my-appointments', '/login', '/register', '/forgot-password', '/booking', '/staff'].includes(location.pathname) ? 'navbar--services' : ''} ${isHidden ? 'hidden' : ''}`}>
             <div className="navbar-container">
                 {/* Left Navigation Links */}
                 <div className="navbar-left">

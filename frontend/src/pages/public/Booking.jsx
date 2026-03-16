@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
 import './Booking.css';
 import placeholderImage from '../../assets/images/Hair.jpg';
 import leftArrow from '../../assets/icons/left-arrow.png';
@@ -964,6 +965,7 @@ const Booking = () => {
                     </aside>
                 )}
             </div>
+            <Footer />
         </div>
     );
 };

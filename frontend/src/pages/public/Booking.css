@@ -2,9 +2,9 @@
     min-height: 100vh;
     background: #f3efe8;
     padding-top: 60px;
-    /* space for navbar */
     display: flex;
-    justify-content: center;
+    flex-direction: column; /* Stack Navbar, Content, Footer */
+    align-items: center;
     font-family: 'Glacial Indifference', sans-serif;
 }
 
@@ -30,12 +30,13 @@
     display: flex;
     max-width: 1200px;
     width: 100%;
-    margin: 10px auto;
+    margin: 40px auto; /* More breathing room */
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
     overflow: hidden;
-    min-height: 600px;
+    min-height: 700px;
+    flex: 1; /* Push footer down */
 }
 
 /* SIDEBAR PROGRESS - VERTICAL ON LEFT */

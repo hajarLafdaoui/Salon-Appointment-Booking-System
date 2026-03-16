@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
 import hairImage from '../../assets/images/Hair.jpg';
 import skincareImage from '../../assets/images/Skincare.jpg';
 import nailsImage from '../../assets/images/Nails.jpg';
@@ -11,7 +12,6 @@ import spaImage from '../../assets/images/Spa.jpg';
 import './Services.css';
 
 const Services = () => {
-    const sliderRef = useRef(null);
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
 
@@ -30,7 +30,7 @@ const Services = () => {
         navigate(targetPath);
     };
 
-    const baseServices = [
+    const services = [
         {
             id: 1,
             title: 'Hair',
@@ -69,26 +69,6 @@ const Services = () => {
         }
     ];
 
-    const services = [...baseServices, ...baseServices];
-
-    useEffect(() => {
-        // Preload images for smoother animation
-        services.forEach(service => {
-            const img = new Image();
-            img.src = service.image;
-        });
-
-        if (sliderRef.current) {
-            sliderRef.current.classList.add('animate');
-        }
-
-        return () => {
-            if (sliderRef.current) {
-                sliderRef.current.classList.remove('animate');
-            }
-        };
-    }, [services]);
-
     return (
         <div className="services-page">
             <Navbar />
@@ -100,10 +80,10 @@ const Services = () => {
                     <p className="services-subtitle">Discover a wide range of beauty services designed to help you look and feel your best.</p>
                 </div>
 
-                <div className="services-slider-container">
-                    <div className="services-slider" ref={sliderRef}>
-                        {services.map((service, index) => (
-                            <div key={`${service.id}-${index}`} className="service-card">
+                <div className="services-grid-container">
+                    <div className="services-grid">
+                        {services.map((service) => (
+                            <div key={service.id} className="service-card">
                                 <div className="service-image-wrapper">
                                     <img
                                         src={service.image}
@@ -118,7 +98,6 @@ const Services = () => {
                                     <button 
                                         onClick={(e) => handleBookClick(e, service.id)} 
                                         className="service-link"
-                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
                                     >
                                         Explore →
                                     </button>
@@ -129,9 +108,10 @@ const Services = () => {
                 </div>
 
                 <div className="services-footer">
-                    <button onClick={(e) => handleBookClick(e)} className="view-all-link">Book a Service →</button>
+                    <button onClick={(e) => handleBookClick(e)} className="view-all-link">Book a Service Now →</button>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 };

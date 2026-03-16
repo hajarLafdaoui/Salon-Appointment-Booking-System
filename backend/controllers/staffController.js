@@ -62,7 +62,8 @@ const getStaffById = async (req, res) => {
   try {
     const staff = await Staff.findById(req.params.id)
       .populate("services")
-      .populate("user", "name email");
+      .populate("user", "name email")
+      .lean();
 
     if (staff) {
       res.json(staff);

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
 import { useFetch } from '../../hooks/useFetch';
 import { useAuth } from '../../hooks/useAuth';
 import leftArrow from '../../assets/icons/left-arrow.png';
@@ -195,6 +196,7 @@ const BrowseServices = () => {
                     </>
                 )}
             </div>
+            <Footer />
         </div>
     );
 };

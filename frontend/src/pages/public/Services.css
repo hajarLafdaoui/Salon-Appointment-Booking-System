@@ -1,6 +1,8 @@
 .services-page {
     width: 100%;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
     position: relative;
     overflow-x: hidden;
 }
@@ -14,21 +16,19 @@
 /* Services Section */
 .services-section {
     background-color: #f3efe8;
-    /* padding: 4rem 2rem; */
+    padding: 3rem 2rem;
     width: 100%;
+    flex: 1; /* Occupy all available space between navbar and footer */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    /* background-im; */
-    padding: 0;
-
+    /* Removed justify-content: center to prevent clipping/scrolling issues */
+    overflow: visible; /* Ensure no accidental scrolling */
 }
 
 .services-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem; /* Increased spacing */
     max-width: 600px;
 }
 
@@ -49,64 +49,42 @@
     margin: 0;
 }
 
-.services-slider-container {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    position: relative;
+.services-grid-container {
+    padding: 0; /* Tightened */
     width: 100%;
     max-width: 1400px;
-    overflow: hidden;
-    mask-image: linear-gradient(to right,
-            transparent 0%,
-            black 10%,
-            black 90%,
-            transparent 100%);
+    height: auto; /* Explicitly auto to override any potential fixed heights */
+    overflow: visible; /* Ensure no scrollbars */
 }
 
-.services-slider {
-    display: flex;
-    gap: 1.5rem;
-    flex: 1;
-    padding: 0.5rem 0;
-    width: 100%;
-    will-change: transform;
-}
-
-/* Infinite scroll animation - continuous seamless loop */
-@keyframes infiniteScroll {
-    0% {
-        transform: translateX(0);
-    }
-
-    100% {
-        /* Move left by exactly the width of one set of cards */
-        transform: translateX(calc(-50% - 0.75rem));
-    }
-}
-
-/* Apply animation to the slider when it has content */
-.services-slider.animate {
-    animation: infiniteScroll 20s linear infinite;
-}
-
-/* Pause animation on hover */
-.services-slider.animate:hover {
-    animation-play-state: paused;
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 2rem;
+    padding: 0 1rem;
+    height: auto;
+    overflow: visible;
 }
 
 .service-card {
-    flex: 0 0 calc(25% - 1.125rem);
     background-color: white;
     overflow: hidden;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     display: flex;
-    flex-direction: column;
+    flex-direction: row-reverse;
+    height: 160px; /* Snugger height to feel "fat and smooth" */
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .service-image-wrapper {
-    width: 100%;
-    height: 160px;
+    width: 40%; /* Slightly smaller image to give text more room */
+    height: 100%;
     overflow: hidden;
     background-color: #f0f0f0;
 }
@@ -115,32 +93,42 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.service-card:hover .service-image {
+    transform: scale(1.05);
 }
 
 .service-content {
-    padding: 1rem;
+    padding: 1.25rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 0.3rem;
     flex: 1;
+    width: 60%;
 }
 
 .service-title {
     font-family: 'Glacial Indifference', sans-serif;
-    font-size: 1rem;
+    font-size: 0.9rem; /* Further reduced from 1rem to satisfy "too big" feedback */
     font-weight: 700;
     color: #333;
-    /* background-color: aqua; */
     margin: 0;
+    line-height: 1.2;
 }
 
 .service-description {
     font-family: 'Glacial Indifference', sans-serif;
-    font-size: 0.8rem;
+    font-size: 0.8rem; /* Corrected from 0.85rem */
     color: #666;
     line-height: 1.4;
     margin: 0;
-    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .service-link {

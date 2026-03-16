@@ -72,7 +72,7 @@ const createAppointment = async (req, res) => {
 const getMyAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({ user: req.user._id })
-      .populate('staff', 'specialty')
+      .populate('staff', 'name image specialty')
       .populate('service', 'name price')
       .sort('-date');
     res.json(appointments);

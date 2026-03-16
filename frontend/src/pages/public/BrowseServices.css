@@ -1,12 +1,12 @@
 .browse-services-page {
-    height: 100vh;
     min-height: 100vh;
     background-color: #f3efe8;
     margin-top: 0;
     padding-top: 80px;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible;
+    /* Allow page scrolling */
     box-sizing: border-box;
 }
 
@@ -114,17 +114,16 @@
     box-shadow: 0 4px 12px rgba(59, 32, 24, 0.2);
 }
 
-/* Services Container - narrower so 4 cards fit in one row */
+/* Services Container - now scrollable naturally */
 .services-container {
-    max-width: 1240px;
+    /* max-width: 1240px; */
     width: 100%;
     margin: 10px auto;
-    /* padding: 16px 20px; */
-    flex: 1;
-    min-height: 0;
+    /* flex: 1; */
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible;
+    /* Allow natural flow */
 }
 
 .loading,
@@ -135,18 +134,17 @@
     font-size: 1rem;
     color: #999;
     font-family: 'Glacial Indifference', sans-serif;
-    flex: 1;
+    min-height: 200px;
 }
 
 .error {
     color: #bf5128;
 }
 
-/* Wrapper so grid scrolls inside fixed-height page */
+/* Wrapper no longer limits height */
 .services-grid-wrapper {
-    flex: 1;
-    min-height: 0;
-    overflow: auto;
+    width: 100%;
+    overflow: visible;
 }
 
 /* Services Grid - 3 rows x 4 columns, columns can shrink so all 4 fit */
@@ -175,18 +173,22 @@
     background: white;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    display: flex;
+    /* display: flex; */
     flex-direction: row;
-    min-height: 72px;
+    height: 80px;
     min-width: 0;
+    border-radius: 8px;
+    /* Added for smoother look */
 }
 
 /* Image on right, smaller - not half the card */
 .service-image-wrapper {
-    width: 80px;
-    min-width: 90px;
+    width: 70px;
+    /* Reduced from 80px */
+    min-width: 70px;
     height: 100%;
-    min-height: 72px;
+    min-height: 64px;
+    /* Reduced from 72px */
     overflow: hidden;
     background: #f0f0f0;
     clip-path: polygon(0 0, 100% 0, 100% 100%, 15% 100%, 0 0);
@@ -200,11 +202,13 @@
 }
 
 .service-card-content {
-    padding: 12px 14px;
+    padding: 8px 12px;
+    /* Reduced from 12px 14px */
     display: flex;
     flex-direction: column;
     flex-grow: 1;
-    justify-content: flex-start;
+    justify-content: center;
+    /* Adjusted from flex-start */
     text-align: left;
     min-width: 0;
 }
@@ -218,7 +222,7 @@
 }
 
 .service-name {
-    font-size: 1rem;
+    font-size: 0.85rem;
     color: #333;
     margin: 0;
     font-family: 'Glacial Indifference', sans-serif;

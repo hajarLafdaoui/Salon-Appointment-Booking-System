@@ -1,36 +1,100 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
 import placeholderImage from '../../assets/images/Hair.jpg';
 import searchIcon from '../../assets/icons/search.png';
 import downIcon from '../../assets/icons/down.png';
 import './Staff.css';
 
+// Memoized Staff Card for zero-lag rendering
+const StaffProfileCard = memo(({ staff, onBook, onDetails, placeholder }) => {
+    return (
+        <div className="staff-profile-card">
+            <div className="card-image-wrapper">
+                <img 
+                    src={staff.image || placeholder} 
+                    alt={staff.name} 
+                    className="staff-profile-img"
+                    loading="lazy"
+                    decoding="async"
+                />
+                <div className="staff-rating-badge">
+                    <span>★</span> {staff.rating || '4.9'}
+                </div>
+            </div>
+            
+            <div className="card-details">
+                <div className="card-header-info">
+                    <h3 className="staff-full-name">{staff.name}</h3>
+                    <span className="staff-specialty-primary">{staff.specialty}</span>
+                </div>
+                
+                <p className="staff-bio">{staff.bio}</p>
+                
+                <div className="card-actions">
+                    <button 
+                        className="staff-book-btn"
+                        onClick={() => onBook(staff._id)}
+                    >
+                        Book Now
+                    </button>
+                    <button 
+                        className="staff-secondary-btn"
+                        onClick={() => onDetails(staff)}
+                    >
+                        Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+});
+
 const Staff = ({ isLandingPage = false }) => {
     const [staffMembers, setStaffMembers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isRefreshing, setIsRefreshing] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [specialty, setSpecialty] = useState('');
     const [page, setPage] = useState(1);
     const [pages, setPages] = useState(1);
     const [selectedDetailsStaff, setSelectedDetailsStaff] = useState(null);
+    const [prefetchedData, setPrefetchedData] = useState({});
+    
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
 
     // Debounce search query
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedSearch(searchQuery);
             setPage(1); // Reset to first page on search
-        }, 500);
+        }, 300); // Snappier search
         return () => clearTimeout(timer);
     }, [searchQuery]);
 
+    // Main Fetch logic with "Background Refresh" pattern
     useEffect(() => {
         const fetchStaff = async () => {
-            setLoading(true);
+            if (staffMembers.length === 0) {
+                setLoading(true);
+            } else {
+                setIsRefreshing(true);
+            }
+
             try {
+                const cacheKey = `${page}-${debouncedSearch}-${specialty}`;
+                if (prefetchedData[cacheKey]) {
+                    setStaffMembers(prefetchedData[cacheKey].staff);
+                    setPages(prefetchedData[cacheKey].pages);
+                    setLoading(false);
+                    setIsRefreshing(false);
+                    return;
+                }
+
                 const queryParams = new URLSearchParams({
                     page,
                     limit: isLandingPage ? 4 : 8,
@@ -48,13 +112,41 @@ const Staff = ({ isLandingPage = false }) => {
                 console.error("Error fetching staff:", error);
             } finally {
                 setLoading(false);
+                setIsRefreshing(false);
             }
         };
         fetchStaff();
-    }, [page, debouncedSearch, specialty, isLandingPage]);
+    }, [page, debouncedSearch, specialty, isLandingPage, prefetchedData]); // Fixed dependency
 
-    const { isAuthenticated } = useAuth();
-    const handleBookNow = (staffId) => {
+    // Pre-fetching Next Page logic
+    useEffect(() => {
+        if (page < pages && !isLandingPage) {
+            const prefetchNext = async () => {
+                const nextPage = page + 1;
+                const cacheKey = `${nextPage}-${debouncedSearch}-${specialty}`;
+                if (prefetchedData[cacheKey]) return;
+
+                const queryParams = new URLSearchParams({
+                    page: nextPage,
+                    limit: 8,
+                    name: debouncedSearch,
+                    specialty: specialty
+                });
+
+                try {
+                    const response = await fetch(`http://localhost:5000/api/staff?${queryParams}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setPrefetchedData(prev => ({ ...prev, [cacheKey]: data }));
+                    }
+                } catch (e) {}
+            };
+            const timer = setTimeout(prefetchNext, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [page, pages, debouncedSearch, specialty, isLandingPage, prefetchedData]);
+
+    const handleBookNow = useCallback((staffId) => {
         if (!isAuthenticated) {
             navigate('/login', { 
                 state: { 
@@ -66,22 +158,67 @@ const Staff = ({ isLandingPage = false }) => {
             return;
         }
         navigate('/booking', { state: { staffId: staffId } });
-    };
+    }, [isAuthenticated, navigate]);
 
-    const handlePageChange = (newPage) => {
+    const handlePageChange = useCallback((newPage) => {
         if (newPage >= 1 && newPage <= pages) {
             setPage(newPage);
-            window.scrollTo({ top: 300, behavior: 'smooth' });
+            window.scrollTo({ top: 300, behavior: 'instant' });
         }
-    };
+    }, [pages]);
 
-    const handleOpenDetails = (staff) => {
+    const handleOpenDetails = useCallback((staff) => {
         setSelectedDetailsStaff(staff);
-    };
+    }, []);
 
-    const handleCloseDetails = () => {
+    const handleCloseDetails = useCallback(() => {
         setSelectedDetailsStaff(null);
-    };
+    }, []);
+
+    const staffGrid = useMemo(() => {
+        if (loading) {
+            return (
+                <div className="staff-premium-grid">
+                    {[...Array(isLandingPage ? 4 : 8)].map((_, i) => (
+                        <div key={i} className="shimmer-card"></div>
+                    ))}
+                </div>
+            );
+        }
+
+        if (staffMembers.length === 0) {
+            return (
+                <div className="no-staff-found">
+                    <h3>No beauty specialists found matching your search.</h3>
+                    <button 
+                        className="reset-btn"
+                        onClick={() => {
+                            setSearchQuery('');
+                            setSpecialty('');
+                            setPage(1);
+                        }}
+                    >
+                        Reset Filters
+                    </button>
+                </div>
+            );
+        }
+
+        return (
+            <div className={`staff-premium-grid ${isRefreshing ? 'refreshing' : ''}`}>
+                {isRefreshing && <div className="background-refresh-bar"></div>}
+                {staffMembers.map((staff) => (
+                    <StaffProfileCard 
+                        key={staff._id} 
+                        staff={staff} 
+                        onBook={handleBookNow} 
+                        onDetails={handleOpenDetails} 
+                        placeholder={placeholderImage}
+                    />
+                ))}
+            </div>
+        );
+    }, [staffMembers, loading, isRefreshing, isLandingPage, handleBookNow, handleOpenDetails, searchQuery, specialty]);
 
     return (
         <div className={`staff-page ${isLandingPage ? 'is-landing' : ''}`}>
@@ -127,99 +264,36 @@ const Staff = ({ isLandingPage = false }) => {
             <main className={`staff-main-layout ${selectedDetailsStaff ? 'sidebar-open' : ''}`}>
                 <div className="staff-content-area">
                     <div className="staff-container">
-                        {loading ? (
-                            <div className="staff-premium-grid">
-                                {[...Array(isLandingPage ? 4 : 8)].map((_, i) => (
-                                    <div key={i} className="shimmer-card"></div>
-                                ))}
-                            </div>
-                        ) : staffMembers.length > 0 ? (
-                            <>
-                                <div className="staff-premium-grid">
-                                    {staffMembers.map((staff) => (
-                                        <div key={staff._id} className="staff-profile-card">
-                                            <div className="card-image-wrapper">
-                                                <img 
-                                                    src={staff.image || placeholderImage} 
-                                                    alt={staff.name} 
-                                                    className="staff-profile-img"
-                                                />
-                                                <div className="staff-rating-badge">
-                                                    <span>★</span> {staff.rating || '4.9'}
-                                                </div>
-                                            </div>
-                                            
-                                            <div className="card-details">
-                                                <div className="card-header-info">
-                                                    <h3 className="staff-full-name">{staff.name}</h3>
-                                                    <span className="staff-specialty-primary">{staff.specialty}</span>
-                                                </div>
-                                                
-                                                <p className="staff-bio">{staff.bio}</p>
-                                                
-                                                <div className="card-actions">
-                                                    <button 
-                                                        className="staff-book-btn"
-                                                        onClick={() => handleBookNow(staff._id)}
-                                                    >
-                                                        Book Now
-                                                    </button>
-                                                    <button 
-                                                        className="staff-secondary-btn"
-                                                        onClick={() => handleOpenDetails(staff)}
-                                                    >
-                                                        Details
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
+                        {staffGrid}
+
+                        {staffMembers.length > 0 && pages > 1 && (
+                            <div className="pagination-controls">
+                                <button 
+                                    className="page-btn"
+                                    disabled={page === 1}
+                                    onClick={() => handlePageChange(page - 1)}
+                                >
+                                    ←
+                                </button>
+                                
+                                <div className="page-numbers">
+                                    {[...Array(pages)].map((_, i) => (
+                                        <button
+                                            key={i + 1}
+                                            className={`page-number ${page === i + 1 ? 'active' : ''}`}
+                                            onClick={() => handlePageChange(i + 1)}
+                                        >
+                                            {i + 1}
+                                        </button>
                                     ))}
                                 </div>
 
-                                {pages > 1 && (
-                                    <div className="pagination-controls">
-                                        <button 
-                                            className="page-btn"
-                                            disabled={page === 1}
-                                            onClick={() => handlePageChange(page - 1)}
-                                        >
-                                            ←
-                                        </button>
-                                        
-                                        <div className="page-numbers">
-                                            {[...Array(pages)].map((_, i) => (
-                                                <button
-                                                    key={i + 1}
-                                                    className={`page-number ${page === i + 1 ? 'active' : ''}`}
-                                                    onClick={() => handlePageChange(i + 1)}
-                                                >
-                                                    {i + 1}
-                                                </button>
-                                            ))}
-                                        </div>
-
-                                        <button 
-                                            className="page-btn"
-                                            disabled={page === pages}
-                                            onClick={() => handlePageChange(page + 1)}
-                                        >
-                                            →
-                                        </button>
-                                    </div>
-                                )}
-                            </>
-                        ) : (
-                            <div className="no-staff-found">
-                                <h3>No beauty specialists found matching your search.</h3>
                                 <button 
-                                    className="reset-btn"
-                                    onClick={() => {
-                                        setSearchQuery('');
-                                        setSpecialty('');
-                                        setPage(1);
-                                    }}
+                                    className="page-btn"
+                                    disabled={page === pages}
+                                    onClick={() => handlePageChange(page + 1)}
                                 >
-                                    Reset Filters
+                                    →
                                 </button>
                             </div>
                         )}
@@ -332,6 +406,7 @@ const Staff = ({ isLandingPage = false }) => {
                     </aside>
                 )}
             </main>
+            {!isLandingPage && <Footer />}
         </div>
     );
 };

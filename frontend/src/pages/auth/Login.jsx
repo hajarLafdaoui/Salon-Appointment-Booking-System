@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import heroImage from '../../assets/images/2.jpg';
+import Navbar from '../../components/layout/Navbar';
+import Footer from '../../components/layout/Footer';
 import './Auth.css';
 
 const Login = () => {
@@ -139,128 +141,132 @@ const Login = () => {
     };
 
     return (
-        <div className="login-container">
-            <div className="login-left">
-                <div className="login-image-wrapper">
-                    <img src={heroImage} alt="BeautyGlow" className="login-image" />
-                    <div className="login-overlay">
-                        <div className="overlay-bottom-right">
-                            <h3 className="overlay-quote-title">BeautyGlow</h3>
-                            <p className="overlay-quote">"Transform Your Beauty Routine"</p>
+        <div className="auth-wrapper">
+            <Navbar />
+            <div className="login-container">
+                <div className="login-left">
+                    <div className="login-image-wrapper">
+                        <img src={heroImage} alt="BeautyGlow" className="login-image" />
+                        <div className="login-overlay">
+                            <div className="overlay-bottom-right">
+                                <h3 className="overlay-quote-title">BeautyGlow</h3>
+                                <p className="overlay-quote">"Transform Your Beauty Routine"</p>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="login-right">
-                <div className="login-form-wrapper">
-                    <div className="login-header">
-                        <h1 className="login-title">
-                            {isLogin ? 'Welcome Back' : 'Create Account'}
-                        </h1>
-                        <p className="login-subtitle">
-                            {isLogin
-                                ? 'Access your personalized beauty experience and manage your appointments effortlessly'
-                                : 'Join us for easy beauty bookings and exclusive offers'
-                            }
-                        </p>
-                    </div>
+                <div className="login-right">
+                    <div className="login-form-wrapper">
+                        <div className="login-header">
+                            <h1 className="login-title">
+                                {isLogin ? 'Welcome Back' : 'Create Account'}
+                            </h1>
+                            <p className="login-subtitle">
+                                {isLogin
+                                    ? 'Access your personalized beauty experience and manage your appointments effortlessly'
+                                    : 'Join us for easy beauty bookings and exclusive offers'
+                                }
+                            </p>
+                        </div>
 
-                    {redirectMessage && <div className="auth-message">{redirectMessage}</div>}
-                    {error && <div className="auth-error">{error}</div>}
+                        {redirectMessage && <div className="auth-message">{redirectMessage}</div>}
+                        {error && <div className="auth-error">{error}</div>}
 
-                    <form onSubmit={handleSubmit} className="login-form">
-                        {!isLogin && (
+                        <form onSubmit={handleSubmit} className="login-form">
+                            {!isLogin && (
+                                <div className="form-group">
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                    <label htmlFor="name" className="form-label">Full Name</label>
+                                </div>
+                            )}
+
                             <div className="form-group">
                                 <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    value={formData.name}
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={formData.email}
                                     onChange={handleChange}
                                     required
                                 />
-                                <label htmlFor="name" className="form-label">Full Name</label>
+                                <label htmlFor="email" className="form-label">Email</label>
                             </div>
-                        )}
 
-                        <div className="form-group">
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                value={formData.email}
-                                onChange={handleChange}
-                                required
-                            />
-                            <label htmlFor="email" className="form-label">Email</label>
-                        </div>
-
-                        <div className="form-group">
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                required
-                            />
-                            <label htmlFor="password" className="form-label">Password</label>
-                        </div>
-
-                        {!isLogin && (
                             <div className="form-group">
                                 <input
                                     type="password"
-                                    id="confirmPassword"
-                                    name="confirmPassword"
-                                    value={formData.confirmPassword}
+                                    id="password"
+                                    name="password"
+                                    value={formData.password}
                                     onChange={handleChange}
                                     required
                                 />
-                                <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+                                <label htmlFor="password" className="form-label">Password</label>
                             </div>
-                        )}
 
-                        {isLogin && (
-                            <div className="form-options">
-                                <label className="remember-me">
+                            {!isLogin && (
+                                <div className="form-group">
                                     <input
-                                        type="checkbox"
-                                        checked={rememberMe}
-                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                        type="password"
+                                        id="confirmPassword"
+                                        name="confirmPassword"
+                                        value={formData.confirmPassword}
+                                        onChange={handleChange}
+                                        required
                                     />
-                                    <span>Remember me</span>
-                                </label>
-                                <a href="/forgot-password" className="forgot-password">Forgot password?</a>
-                            </div>
-                        )}
+                                    <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
+                                </div>
+                            )}
 
-                        <button type="submit" className="login-button" disabled={loading}>
-                            {loading
-                                ? (isLogin ? 'Signing in...' : 'Creating account...')
-                                : (isLogin ? 'Log In' : 'Sign Up')
-                            }
-                        </button>
-                    </form>
+                            {isLogin && (
+                                <div className="form-options">
+                                    <label className="remember-me">
+                                        <input
+                                            type="checkbox"
+                                            checked={rememberMe}
+                                            onChange={(e) => setRememberMe(e.target.checked)}
+                                        />
+                                        <span>Remember me</span>
+                                    </label>
+                                    <a href="/forgot-password" className="forgot-password">Forgot password?</a>
+                                </div>
+                            )}
 
-                    <div className="login-footer">
-                        <p>
-                            {isLogin
-                                ? "Don't have an account? "
-                                : 'Already have an account? '
-                            }
-                            <button
-                                type="button"
-                                className="toggle-auth-link"
-                                onClick={handleToggle}
-                            >
-                                {isLogin ? 'Sign up' : 'Sign in'}
+                            <button type="submit" className="login-button" disabled={loading}>
+                                {loading
+                                    ? (isLogin ? 'Signing in...' : 'Creating account...')
+                                    : (isLogin ? 'Log In' : 'Sign Up')
+                                }
                             </button>
-                        </p>
+                        </form>
+
+                        <div className="login-footer">
+                            <p>
+                                {isLogin
+                                    ? "Don't have an account? "
+                                    : 'Already have an account? '
+                                }
+                                <button
+                                    type="button"
+                                    className="toggle-auth-link"
+                                    onClick={handleToggle}
+                                >
+                                    {isLogin ? 'Sign up' : 'Sign in'}
+                                </button>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 };

@@ -17,6 +17,8 @@ const appointmentSchema = mongoose.Schema(
   { timestamps: true }
 );
 
+// Add indices for performance
+appointmentSchema.index({ user: 1, date: -1 });
 // Ensure no double-booking for same staff at same time
 appointmentSchema.index({ staff: 1, date: 1, endTime: 1 }, { unique: true });
 

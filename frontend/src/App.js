@@ -8,8 +8,10 @@ import HowItWorks from './pages/public/HowItWorks';
 import Staff from './pages/public/Staff';
 import Login from './pages/auth/Login';
 import ForgotPassword from './pages/auth/ForgotPassword';
+import MyAppointments from './pages/public/MyAppointments';
 
 import Booking from './pages/public/Booking';
+import Profile from './pages/public/Profile';
 
 function App() {
   return (
@@ -24,8 +26,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Login />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/my-appointments" element={<div>My Appointments</div>} />
-            <Route path="/profile" element={<div>Profile Page</div>} />
+            <Route path="/my-appointments" element={<MyAppointments />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/staff/dashboard" element={<div>Staff Dashboard</div>} />
             <Route path="/admin/dashboard" element={<div>Admin Dashboard</div>} />
             <Route path="/booking" element={<Booking />} />

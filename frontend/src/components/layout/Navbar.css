@@ -13,12 +13,18 @@
 
 /* Same background as Services page - blends with page */
 .navbar.navbar--services {
-    background-color: #f3efe8 !important;
+    background-color: transparent !important;
     box-shadow: none !important;
 }
 
-.navbar.navbar--services .navbar-logo {
+.navbar.navbar--services .navbar-logo,
+.navbar.navbar--services .nav-link,
+.navbar.navbar--services .logout-btn {
     color: black !important;
+}
+
+.navbar.navbar--services .user-avatar {
+    border-color: rgba(0, 0, 0, 0.2);
 }
 
 .navbar-container {
