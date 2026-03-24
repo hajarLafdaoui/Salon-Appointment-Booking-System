@@ -14,17 +14,24 @@ import {
   CheckCircle, 
   Grid, 
   Layers,
-  ChevronRight
+  MoreVertical,
+  ChevronRight,
+  ChevronLeft,
+  Upload
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AdminLayout from '../../components/layout/AdminLayout';
+import { useToast } from '../../context/ToastContext';
 import './Services.css';
 
 const Services = () => {
+  const { showToast } = useToast();
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
   
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -39,14 +46,21 @@ const Services = () => {
     price: '',
     duration: '',
     category: 'Hair',
-    image: '',
+    imageFile: null, // For local upload
     isPopular: false
   });
+
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const [activeMenu, setActiveMenu] = useState(null);
 
   const categories = ['All', 'Hair', 'Skincare', 'Nails', 'Makeup', 'Brows & Lashes', 'Spa & Massage'];
 
   useEffect(() => {
     fetchServices();
+    const handleOutsideClick = () => setActiveMenu(null);
+    window.addEventListener('click', handleOutsideClick);
+    return () => window.removeEventListener('click', handleOutsideClick);
   }, []);
 
   const fetchServices = async () => {
@@ -62,11 +76,20 @@ const Services = () => {
   };
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
-    });
+    const { name, value, type, checked, files } = e.target;
+    
+    if (type === 'file') {
+      const file = files[0];
+      if (file) {
+        setFormData({ ...formData, imageFile: file });
+        setImagePreview(URL.createObjectURL(file));
+      }
+    } else {
+      setFormData({
+        ...formData,
+        [name]: type === 'checkbox' ? checked : value
+      });
+    }
   };
 
   const resetForm = () => {
@@ -76,9 +99,10 @@ const Services = () => {
       price: '',
       duration: '',
       category: 'Hair',
-      image: '',
+      imageFile: null,
       isPopular: false
     });
+    setImagePreview(null);
     setEditingService(null);
   };
 
@@ -90,9 +114,10 @@ const Services = () => {
       price: service.price,
       duration: service.duration,
       category: service.category,
-      image: service.image || '',
+      imageFile: null,
       isPopular: service.isPopular || false
     });
+    setImagePreview(service.image || null);
     setShowAddModal(true);
   };
 
@@ -105,14 +130,29 @@ const Services = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
+      const submitData = new FormData();
+      
+      Object.keys(formData).forEach(key => {
+        if (key === 'imageFile') {
+          if (formData.imageFile) submitData.append('image', formData.imageFile);
+        } else {
+          submitData.append(key, formData[key]);
+        }
+      });
+
       const config = {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
       };
 
       if (editingService) {
-        await axios.put(`http://localhost:5000/api/services/${editingService._id}`, formData, config);
+        await axios.put(`http://localhost:5000/api/services/${editingService._id}`, submitData, config);
+        showToast('Service updated successfully!');
       } else {
-        await axios.post('http://localhost:5000/api/services', formData, config);
+        await axios.post('http://localhost:5000/api/services', submitData, config);
+        showToast('Service created successfully!');
       }
       
       fetchServices();
@@ -120,7 +160,7 @@ const Services = () => {
       resetForm();
     } catch (error) {
       console.error('Error saving service:', error);
-      alert('Failed to save service. Please try again.');
+      showToast('Failed to save service.', 'error');
     }
   };
 
@@ -130,12 +170,13 @@ const Services = () => {
       await axios.delete(`http://localhost:5000/api/services/${serviceToDelete._id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      showToast('Service deleted successfully!');
       fetchServices();
       setShowDeleteModal(false);
       setServiceToDelete(null);
     } catch (error) {
       console.error('Error deleting service:', error);
-      alert('Failed to delete service.');
+      showToast('Failed to delete service.', 'error');
     }
   };
 
@@ -144,6 +185,20 @@ const Services = () => {
     const matchesCategory = selectedCategory === 'All' || service.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredServices.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentServices = filteredServices.slice(startIndex, startIndex + itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory]);
 
   // Calculate quick stats
   const stats = {
@@ -216,46 +271,96 @@ const Services = () => {
             <p>Loading services...</p>
           </div>
         ) : filteredServices.length > 0 ? (
-          <motion.div 
-            className="services-grid-premium"
-            layout
-          >
-            <AnimatePresence>
-              {filteredServices.map((service) => (
-                <motion.div 
-                  key={service._id}
-                  className="service-pro-card"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  whileHover={{ y: -8 }}
-                >
-                  <div className="card-image-wrap">
-                    <img src={service.image || 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=400'} alt={service.name} />
-                    {service.isPopular && <span className="popular-ribbon"><Star size={10} fill="currentColor" /> POPULAR</span>}
-                    <div className="card-actions-overlay">
-                      <button className="overlay-btn edit" onClick={() => handleEditClick(service)}><Edit2 size={16} /></button>
-                      <button className="overlay-btn delete" onClick={() => handleDeleteClick(service)}><Trash2 size={16} /></button>
-                    </div>
-                  </div>
-                  
-                  <div className="card-body-pro">
-                    <div className="category-tag">{service.category}</div>
-                    <h3>{service.name}</h3>
-                    <p className="card-desc">{service.description || 'Professional service tailored to your needs.'}</p>
-                    
-                    <div className="card-footer-metrics">
-                      <div className="metric-item">
-                        <Clock size={14} />
-                        <span>{service.duration} min</span>
+          <>
+            <motion.div 
+              className="services-grid-premium"
+              layout
+            >
+              <AnimatePresence>
+                {currentServices.map((service) => (
+                  <motion.div 
+                    key={service._id}
+                    className="service-pro-card"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                  >
+                    <div className="card-body-pro">
+                      <div className="card-header-actions">
+                        <div className="category-tag">{service.category}</div>
+                        <div className="action-menu-wrap" onClick={(e) => e.stopPropagation()}>
+                          <button 
+                            className="dots-action-btn"
+                            onClick={() => setActiveMenu(activeMenu === service._id ? null : service._id)}
+                          >
+                            <MoreVertical size={16} />
+                          </button>
+                          {activeMenu === service._id && (
+                            <div className="service-action-dropdown">
+                              <button className="dropdown-opt edit" onClick={() => handleEditClick(service)}><Edit2 size={14} /> Edit Service</button>
+                              <button className="dropdown-opt delete" onClick={() => handleDeleteClick(service)}><Trash2 size={14} /> Delete</button>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div className="metric-price">${service.price}</div>
+
+                      <h3>{service.name}</h3>
+                      <p className="card-desc">{service.description || 'Professional service tailored to your needs.'}</p>
+                      
+                      <div className="card-footer-metrics">
+                        <div className="metric-item">
+                          <Clock size={14} />
+                          <span>{service.duration} min</span>
+                        </div>
+                        <div className="metric-price">${service.price}</div>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
+
+                    <div className="card-image-wrap">
+                      <img src={service.image || 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&q=80&w=400'} alt={service.name} />
+                      {service.isPopular && <span className="popular-ribbon"><Star size={10} fill="currentColor" /> POPULAR</span>}
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="admin-pagination-footer">
+                <div className="pagination-info">
+                  Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredServices.length)} of {filteredServices.length}
+                </div>
+                <div className="pagination-controls-pro">
+                  <button 
+                    className="pagination-btn-square"
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  
+                  {[...Array(totalPages)].map((_, i) => (
+                    <button
+                      key={i + 1}
+                      className={`pagination-btn-square ${currentPage === i + 1 ? 'active' : ''}`}
+                      onClick={() => handlePageChange(i + 1)}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+
+                  <button 
+                    className="pagination-btn-square"
+                    disabled={currentPage === totalPages}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         ) : (
           <div className="empty-services-state">
             <Grid size={48} />
@@ -338,14 +443,26 @@ const Services = () => {
                   </div>
 
                   <div className="form-group-half">
-                    <label>Image URL</label>
-                    <input 
-                      type="text" 
-                      name="image" 
-                      placeholder="https://..."
-                      value={formData.image}
-                      onChange={handleInputChange}
-                    />
+                    <label>Service Image</label>
+                    <div className="file-upload-pro">
+                      <input 
+                        type="file" 
+                        id="serviceImage"
+                        name="image" 
+                        accept="image/*"
+                        onChange={handleInputChange}
+                        style={{ display: 'none' }}
+                      />
+                      <label htmlFor="serviceImage" className="file-label-btn">
+                        <Upload size={14} style={{ marginRight: '8px' }} />
+                        {imagePreview ? 'Change Image' : 'Choose Local Image'}
+                      </label>
+                      {imagePreview && (
+                        <div className="preview-small-wrap" title="Image Preview">
+                          <img src={imagePreview} alt="Preview" />
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   <div className="form-group-checkbox">

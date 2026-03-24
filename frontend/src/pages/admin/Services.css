@@ -94,12 +94,12 @@
 .search-wrapper-premium {
   position: relative;
   flex: 1;
-  max-width: 400px;
+  max-width: 280px; /* Reduced as requested */
 }
 
 .search-icon-fixed {
   position: absolute;
-  left: 12px;
+  left: 14px;
   top: 50%;
   transform: translateY(-50%);
   color: #94a3b8;
@@ -107,13 +107,14 @@
 
 .search-wrapper-premium input {
   width: 100%;
-  padding: 0.75rem 0.75rem 0.75rem 2.5rem;
-  border-radius: 12px;
-  border: 1.5px solid #f1f5f9;
+  padding: 0.65rem 1rem 0.65rem 2.6rem;
+  border-radius: 24px; /* Matching customer style */
+  border: 1.5px solid #d4c4b0;
   background: white;
   outline: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   transition: all 0.2s ease;
+  font-family: 'Glacial Indifference', sans-serif;
 }
 
 .search-wrapper-premium input:focus {
@@ -153,29 +154,75 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
-/* Grid & Cards */
+/* Grid & Cards - Horizontal Matching Customer Style */
 .services-grid-premium {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 1.5rem;
   margin-bottom: 3rem;
+  min-height: 300px;
+}
+
+.empty-services-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 20px;
+  border: 1px dashed #cbd5e1;
+  color: #94a3b8;
+  text-align: center;
+}
+
+.empty-services-state h3 {
+  color: #1a1a1a;
+  margin: 1.5rem 0 0.5rem 0;
+}
+
+.clear-filter-btn {
+  margin-top: 1.5rem;
+  padding: 0.75rem 2rem;
+  background: white;
+  border: 1.5px solid #3b2018; /* Theme brown */
+  color: #3b2018;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.clear-filter-btn:hover {
+  background: #3b2018;
+  color: #f0cb37; /* Theme gold */
 }
 
 .service-pro-card {
   background: white;
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid #f1f5f9;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.03);
-  position: relative;
+  border-radius: 12px;
+  overflow: visible; /* Changed to allow dropdown to overflow box */
+  border: 1px solid #e8dfd5;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
   display: flex;
-  flex-direction: column;
+  flex-direction: row; /* Image will be on the right because of React order or explicit placement */
+  height: 140px;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.service-pro-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .card-image-wrap {
+  flex: 0 0 35%;
+  height: 100%;
   position: relative;
-  height: 200px;
-  overflow: hidden;
+  flex-shrink: 0;
+  overflow: hidden; /* Fixes image taking too much space/spilling out */
+  border-radius: 0 12px 12px 0; /* Ensures image follows parent's rounded corners */
 }
 
 .card-image-wrap img {
@@ -206,49 +253,81 @@
   z-index: 2;
 }
 
-.card-actions-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+/* Action Menu Styles */
+.card-header-actions {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 5;
+  margin-bottom: 0.4rem;
 }
 
-.service-pro-card:hover .card-actions-overlay {
-  opacity: 1;
+.action-menu-wrap {
+  position: relative;
 }
 
-.overlay-btn {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
+.dots-action-btn {
+  background: transparent;
   border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  padding: 4px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   transition: all 0.2s;
-  color: white;
 }
 
-.overlay-btn.edit { background: rgba(59, 130, 246, 0.9); }
-.overlay-btn.delete { background: rgba(239, 68, 68, 0.9); }
-
-.overlay-btn:hover {
-  transform: translateY(-3px);
-  filter: brightness(1.1);
+.dots-action-btn:hover {
+  background: #f1f5f9;
+  color: #1a1a1a;
 }
+
+.service-action-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #f1f5f9;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  width: 140px;
+  overflow: hidden;
+  padding: 4px;
+}
+
+.dropdown-opt {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  background: transparent;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  border-radius: 6px;
+  text-align: left;
+}
+
+.dropdown-opt:hover {
+  background: #f8fafc;
+  color: #1a1a1a;
+}
+
+.dropdown-opt.edit:hover { background: #eff6ff; color: #2563eb; }
+.dropdown-opt.delete:hover { background: #fef2f2; color: #ef4444; }
 
 .card-body-pro {
-  padding: 1.5rem;
+  padding: 1rem 1.25rem;
   flex: 1;
+  width: 65%;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 .category-tag {
@@ -261,27 +340,28 @@
 }
 
 .card-body-pro h3 {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 800;
   color: #1a1a1a;
-  margin: 0 0 0.75rem 0;
+  margin: 0.2rem 0;
+  font-family: 'Glacial Indifference', sans-serif;
 }
 
 .card-desc {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: #64748b;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .card-footer-metrics {
-  margin-top: auto;
-  padding-top: 1.25rem;
-  border-top: 1.5px dashed #f1f5f9;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -310,9 +390,10 @@
   backdrop-filter: blur(8px);
   z-index: 1000;
   display: flex;
-  align-items: center;
+  align-items: center; /* Vertically center the modal as requested */
   justify-content: center;
-  padding: 1.5rem;
+  padding: 2rem 1.5rem; /* Reduced to provide reasonable margin */
+  overflow-y: auto;
 }
 
 .service-form-modal {
@@ -322,10 +403,11 @@
   border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+  margin: 2rem 0; /* Adding explicit top/bottom margin to the modal itself */
 }
 
 .modal-header-pro {
-  padding: 1.5rem 2rem;
+  padding: 0.75rem 1.5rem; /* Further reduced internals */
   border-bottom: 1px solid #f1f5f9;
   display: flex;
   justify-content: space-between;
@@ -354,10 +436,11 @@
 }
 
 .modal-form-grid {
-  padding: 2rem;
+  padding: 1.25rem 2.25rem; /* Increased right padding as requested */
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  column-gap: 2rem; /* Increased horizontal separation for Price/Duration */
+  row-gap: 1rem;
 }
 
 .form-group-full { grid-column: span 2; }
@@ -371,15 +454,70 @@
 }
 
 .modal-form-grid input,
-.modal-form-grid select,
-.modal-form-grid textarea {
+.modal-form-grid select {
   width: 100%;
-  padding: 0.8rem 1rem;
+  height: 42px; /* Fixed height for consistency */
+  padding: 0 0.8rem;
   border-radius: 12px;
   border: 1.5px solid #f1f5f9;
   outline: none;
   font-size: 0.9rem;
   transition: all 0.2s;
+  cursor: pointer;
+}
+
+.file-upload-pro {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.file-label-btn {
+  flex: 1;
+  height: 42px;
+  background: #f1f5f9;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1.5px dashed #cbd5e1;
+  transition: all 0.2s;
+}
+
+.file-label-btn:hover {
+  background: #e2e8f0;
+  border-color: #3b2018;
+  color: #1a1a1a;
+}
+
+.preview-small-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #f1f5f9;
+  flex-shrink: 0;
+}
+
+.preview-small-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.modal-form-grid textarea {
+  width: 100%;
+  padding: 0.8rem 0.8rem;
+  border-radius: 12px;
+  border: 1.5px solid #f1f5f9;
+  outline: none;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  min-height: 80px;
 }
 
 .modal-form-grid input:focus,
@@ -413,7 +551,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
-  margin-top: 1rem;
+  margin-top: 0.5rem; /* Reduced margin */
 }
 
 .btn-cancel {
