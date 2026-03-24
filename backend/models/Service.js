@@ -13,6 +13,7 @@ const serviceSchema = mongoose.Schema(
     price: { type: Number, required: true },
     image: { type: String },
     isActive: { type: Boolean, default: true },
+    isPopular: { type: Boolean, default: false },
     // staff who can perform this service (many-to-many)
     staff: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Staff' }],
   },

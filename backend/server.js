@@ -20,6 +20,7 @@ app.use('/api/services', require('./routes/serviceRoutes'));
 app.use('/api/appointments', require('./routes/appointmentRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/dashboard', require('./routes/dashboardRoutes'));
 
 // Base route
 app.get('/', (req, res) => {

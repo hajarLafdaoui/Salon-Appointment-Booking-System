@@ -1,0 +1,250 @@
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.admin-main {
+  flex: 1;
+  margin-left: 180px; /* Matched 180px sidebar */
+  padding: 0 0 1rem 0;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+  .admin-main {
+    margin-left: 70px;
+  }
+}
+
+.dashboard-content {
+  padding: 0 1.5rem; /* Reduced padding */
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Stats Grid - 6 cards, 3 per row */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 cards per line */
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: #ffffff;
+  padding: 0.85rem 1rem; /* Even smaller padding */
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
+}
+
+.stat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.25rem; /* Reduced from 0.4rem */
+}
+
+.icon-container {
+  padding: 0.5rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Theme Colors */
+.icon-container.brown { background: #f7f3ed; color: #3b2018; }
+.icon-container.gold { background: #fffcf0; color: #f0cb37; }
+.icon-container.green { background: #f0fdf4; color: #16a34a; }
+.icon-container.blue { background: #eff6ff; color: #2563eb; }
+.icon-container.purple { background: #faf5ff; color: #9333ea; }
+.icon-container.red { background: #fef2f2; color: #ef4444; }
+
+.trend {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.trend.positive { color: #16a34a; }
+.trend.negative { color: #ef4444; }
+
+.stat-value {
+  font-family: 'Glacial Indifference', sans-serif;
+  font-size: 1.4rem; /* Smaller font */
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.stat-title {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 0; /* Fully removed gap */
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+/* Charts Grid */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.chart-card {
+  background: #ffffff;
+  padding: 1rem; /* Reduced padding */
+  border-radius: 16px;
+}
+
+.chart-header {
+  margin-bottom: 0.5rem; /* Even tighter header */
+}
+
+.chart-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 0.2rem;
+}
+
+.chart-header p {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+/* Table Card */
+.table-card {
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.table-header {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.table-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.view-all-btn {
+  padding: 0.4rem 0.8rem;
+  background: #3b2018; /* Theme Brown */
+  border: none;
+  border-radius: 8px;
+  color: #f0cb37; /* Theme Gold */
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Glacial Indifference', sans-serif;
+  box-shadow: 0 2px 6px rgba(59, 32, 24, 0.1);
+}
+
+.view-all-btn:hover {
+  background: #4f2b20;
+  transform: translateY(-1px);
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  background: #f8fafc;
+  padding: 0.8rem 1.5rem;
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+td {
+  padding: 0.9rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.85rem;
+}
+
+.customer-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.small-avatar {
+  width: 32px;
+  height: 32px;
+  background: #f7f3ed;
+  color: #3b2018;
+}
+
+.customer-info-small {
+  display: flex;
+  align-items: baseline; /* Side by side */
+  gap: 1rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.customer-name { 
+  font-weight: 600; 
+  white-space: nowrap;
+}
+
+.customer-email { 
+  font-size: 0.7rem; 
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.service-tag, .time-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+}
+
+.status-badge {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.65rem;
+  border-radius: 50px;
+}
+
+/* Media Queries for grid responsiveness */
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
