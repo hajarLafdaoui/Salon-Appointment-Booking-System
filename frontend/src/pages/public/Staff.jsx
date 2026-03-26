@@ -116,6 +116,7 @@ const Staff = ({ isLandingPage = false }) => {
             }
         };
         fetchStaff();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [page, debouncedSearch, specialty, isLandingPage, prefetchedData]); // Fixed dependency
 
     // Pre-fetching Next Page logic
@@ -218,6 +219,7 @@ const Staff = ({ isLandingPage = false }) => {
                 ))}
             </div>
         );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [staffMembers, loading, isRefreshing, isLandingPage, handleBookNow, handleOpenDetails, searchQuery, specialty]);
 
     return (

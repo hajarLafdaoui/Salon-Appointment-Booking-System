@@ -3,6 +3,7 @@ const {
   createAppointment,
   getMyAppointments,
   getAllAppointments,
+  getMyStaffAppointments,
   updateStatus,
   cancelAppointment,
   getStaffBookedSlots,
@@ -15,6 +16,7 @@ router.route('/')
   .get(protect, admin, getAllAppointments);
 
 router.get('/my', protect, getMyAppointments);
+router.get('/staff/me', protect, staffOrAdmin, getMyStaffAppointments);
 router.get('/staff/:staffId', protect, getStaffBookedSlots);
 
 router.put('/:id/status', protect, staffOrAdmin, updateStatus);

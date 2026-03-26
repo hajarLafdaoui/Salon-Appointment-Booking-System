@@ -190,14 +190,15 @@ const Login = () => {
 
                             <div className="form-group">
                                 <input
-                                    type="email"
+                                    type="text"
                                     id="email"
                                     name="email"
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
+                                    placeholder="Email or your staff name"
                                 />
-                                <label htmlFor="email" className="form-label">Email</label>
+                                <label htmlFor="email" className="form-label">Name or Email</label>
                             </div>
 
                             <div className="form-group">

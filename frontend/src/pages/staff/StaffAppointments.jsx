@@ -3,20 +3,20 @@ import axios from 'axios';
 import { 
   Search, 
   Filter, 
-  Download, 
   MoreVertical, 
   Eye, 
   CheckCircle, 
   XCircle, 
   Check, 
   Calendar, 
-  Clock, 
-  FileText,
   X 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import AdminLayout from '../../components/layout/AdminLayout';
-import './Appointments.css';
+import StaffLayout from '../../components/layout/StaffLayout';
+import { useToast } from '../../context/ToastContext';
+import '../admin/Appointments.css';
+
+const API = 'http://localhost:5000';
 
 const StatusBadge = ({ status }) => {
   const styles = {
@@ -32,21 +32,36 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const Appointments = () => {
+const StaffAppointments = () => {
+  const { showToast } = useToast();
+
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [dateFilter, setDateFilter] = useState('all');
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [activeMenu, setActiveMenu] = useState(null);
 
-  const menuRef = useRef(null);
-
   useEffect(() => {
+    const fetchAppointments = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await axios.get(`${API}/api/appointments/staff/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAppointments(res.data || []);
+      } catch (err) {
+        showToast(err?.response?.data?.message || 'Failed to load appointments.', 'error');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchAppointments();
-  }, []);
+  }, [showToast]);
+
+  const menuRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -58,61 +73,21 @@ const Appointments = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const fetchAppointments = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/appointments', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setAppointments(response.data);
-    } catch (error) {
-      console.error('Error fetching appointments:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const updateStatus = async (id, newStatus) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/appointments/${id}/status`, { status: newStatus }, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      // Refresh local state to reflect update
-      setAppointments(appointments.map(app => 
-        app._id === id ? { ...app, status: newStatus } : app
-      ));
+      await axios.put(
+        `${API}/api/appointments/${id}/status`,
+        { status: newStatus },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Update UI state
+      setAppointments((prev) => prev.map((app) => (app._id === id ? { ...app, status: newStatus } : app)));
       setActiveMenu(null);
-    } catch (error) {
-      console.error('Error updating status:', error);
+    } catch (err) {
+      showToast(err?.response?.data?.message || 'Failed to update appointment.', 'error');
     }
-  };
-
-  const exportToCSV = () => {
-    if (filteredAppointments.length === 0) return;
-
-    const headers = ['Customer', 'Email', 'Service', 'Staff', 'Date', 'Time', 'Price', 'Status'];
-    const csvData = filteredAppointments.map(app => [
-      app.user?.name || 'Unknown',
-      app.user?.email || 'N/A',
-      app.service?.name || 'N/A',
-      app.staff?.name || 'Assigned',
-      new Date(app.date).toLocaleDateString(),
-      new Date(app.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      app.service?.price || 0,
-      app.status
-    ]);
-
-    const csvContent = [headers, ...csvData].map(e => e.join(",")).join("\n");
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    link.setAttribute("download", `appointments_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   // Filter Logic
@@ -123,77 +98,19 @@ const Appointments = () => {
     
     const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
     
-    // Simple date filter logic
-    const appDate = new Date(app.date);
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    
-    let matchesDate = true;
-    if (dateFilter === 'today') {
-      matchesDate = appDate.toDateString() === today.toDateString();
-    } else if (dateFilter === 'thisWeek') {
-      const nextWeek = new Date(today);
-      nextWeek.setDate(today.getDate() + 7);
-      matchesDate = appDate >= today && appDate < nextWeek;
-    }
-    
-    return matchesSearch && matchesStatus && matchesDate;
+    return matchesSearch && matchesStatus;
   });
 
-  // Calculate Stats
-  const stats = {
-    total: appointments.length,
-    pending: appointments.filter(a => a.status === 'pending').length,
-    confirmed: appointments.filter(a => a.status === 'confirmed').length,
-    cancelled: appointments.filter(a => a.status === 'cancelled').length
-  };
-
   return (
-    <AdminLayout>
+    <StaffLayout>
       <div className="appointments-page">
         {/* Header Section */}
-        <header className="page-header-compact">
+        <header className="page-header-compact" style={{ marginBottom: '1rem' }}>
           <div className="header-titles">
-            <h1>Appointments</h1>
-            <p className="subtitle-block">Manage and track all bookings</p>
+            <h1>My Appointments</h1>
+            <p className="subtitle-block">Manage your assigned bookings</p>
           </div>
-          <button className="export-btn" onClick={exportToCSV}>
-            <Download size={16} />
-            <span>Export CSV</span>
-          </button>
         </header>
-
-        {/* Stats Row */}
-        <div className="stats-row-compact">
-          <div className="mini-stat-card">
-            <div className="mini-icon-circle"><FileText size={20} /></div>
-            <div className="mini-content">
-              <span className="mini-stat-label">Total Appointments</span>
-              <span className="mini-stat-value">{stats.total}</span>
-            </div>
-          </div>
-          <div className="mini-stat-card border-yellow">
-            <div className="mini-icon-circle yellow-bg"><Clock size={20} /></div>
-            <div className="mini-content">
-              <span className="mini-stat-label">Pending</span>
-              <span className="mini-stat-value yellow-text">{stats.pending}</span>
-            </div>
-          </div>
-          <div className="mini-stat-card border-blue">
-            <div className="mini-icon-circle blue-bg"><CheckCircle size={20} /></div>
-            <div className="mini-content">
-              <span className="mini-stat-label">Confirmed</span>
-              <span className="mini-stat-value blue-text">{stats.confirmed}</span>
-            </div>
-          </div>
-          <div className="mini-stat-card border-red">
-            <div className="mini-icon-circle red-bg"><XCircle size={20} /></div>
-            <div className="mini-content">
-              <span className="mini-stat-label">Cancelled</span>
-              <span className="mini-stat-value red-text">{stats.cancelled}</span>
-            </div>
-          </div>
-        </div>
 
         {/* Action Bar */}
         <div className="toolbar-compact">
@@ -218,15 +135,6 @@ const Appointments = () => {
                 <option value="cancelled">Cancelled</option>
               </select>
             </div>
-            
-            <div className="filter-select">
-              <Calendar size={16} />
-              <select value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
-                <option value="all">Date: All Time</option>
-                <option value="today">Today</option>
-                <option value="thisWeek">This Week</option>
-              </select>
-            </div>
           </div>
         </div>
 
@@ -238,13 +146,12 @@ const Appointments = () => {
             <table className="modern-table">
               <thead>
                 <tr>
-                  <th>Customer</th>
+                  <th>Customer Name</th>
                   <th>Service</th>
-                  <th>Staff</th>
                   <th>Date & Time</th>
                   <th>Price</th>
                   <th>Status</th>
-                  <th></th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -273,12 +180,9 @@ const Appointments = () => {
                         </div>
                       </td>
                       <td>
-                        <span className="td-staff-name">{app.staff?.name || 'Assigned'}</span>
-                      </td>
-                      <td>
                         <div className="td-date-cell">
                           <span className="td-date">{new Date(app.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })}</span>
-                          <span className="td-time">{new Date(app.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          <span className="td-time">{new Date(app.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}</span>
                         </div>
                       </td>
                       <td>
@@ -305,22 +209,22 @@ const Appointments = () => {
                               }}>
                                 <Eye size={14} /> View Details
                               </button>
-                              
+
                               {app.status === 'pending' && (
                                 <button onClick={() => updateStatus(app._id, 'confirmed')} className="confirm-opt">
-                                  <Check size={14} /> Confirm
+                                  <Check size={14} /> Accept / Confirm Appointment
                                 </button>
                               )}
-                              
+
                               {app.status === 'confirmed' && (
                                 <button onClick={() => updateStatus(app._id, 'completed')} className="complete-opt">
-                                  <CheckCircle size={14} /> Complete
+                                  <CheckCircle size={14} /> Mark as Completed
                                 </button>
                               )}
-                              
-                              {app.status !== 'cancelled' && app.status !== 'completed' && (
+
+                              {(app.status === 'pending' || app.status === 'confirmed') && (
                                 <button onClick={() => updateStatus(app._id, 'cancelled')} className="cancel-opt">
-                                  <XCircle size={14} /> Cancel
+                                  <XCircle size={14} /> Cancel Appointment
                                 </button>
                               )}
                             </div>
@@ -334,21 +238,13 @@ const Appointments = () => {
             </table>
           ) : (
             <div className="empty-state">
-              <FileText size={48} />
+              <Calendar size={48} />
               <h3>No appointments found</h3>
               <p>Try adjusting your search or filters</p>
             </div>
           )}
         </div>
 
-        {/* Pagination Section */}
-        <div className="pagination-compact">
-          <p>Showing {filteredAppointments.length} results</p>
-          <div className="pagi-buttons">
-            <button disabled>Previous</button>
-            <button disabled>Next</button>
-          </div>
-        </div>
       </div>
 
       {/* Details Modal */}
@@ -384,10 +280,6 @@ const Appointments = () => {
                     <span className="value">{selectedAppointment.service?.name}</span>
                   </div>
                   <div className="compact-detail-item">
-                    <span className="label">Staff</span>
-                    <span className="value">{selectedAppointment.staff?.name || 'Assigned'}</span>
-                  </div>
-                  <div className="compact-detail-item">
                     <span className="label">Date & Time</span>
                     <span className="value">
                       {new Date(selectedAppointment.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })} • {new Date(selectedAppointment.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -397,6 +289,12 @@ const Appointments = () => {
                     <span className="label">Total Price</span>
                     <span className="value-price">${selectedAppointment.service?.price}</span>
                   </div>
+                  {selectedAppointment.notes && (
+                    <div className="compact-detail-item" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.3rem' }}>
+                      <span className="label">Notes</span>
+                      <span className="value" style={{ fontStyle: 'italic', fontWeight: 'normal', color: '#64748b' }}>{selectedAppointment.notes}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="modal-status-footer">
@@ -404,21 +302,12 @@ const Appointments = () => {
                   <StatusBadge status={selectedAppointment.status} />
                 </div>
               </div>
-              
-              <div className="modal-footer-compact">
-                {selectedAppointment.status === 'pending' && (
-                  <button className="btn-primary-compact" onClick={() => {
-                    updateStatus(selectedAppointment._id, 'confirmed');
-                    setShowModal(false);
-                  }}>Confirm Booking</button>
-                )}
-              </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
-    </AdminLayout>
+    </StaffLayout>
   );
 };
 
-export default Appointments;
+export default StaffAppointments;

@@ -112,11 +112,45 @@ const updateStatus = async (req, res) => {
     const appointment = await Appointment.findById(req.params.id);
     if (!appointment) return res.status(404).json({ message: 'Appointment not found' });
 
+    // Staff can only update their own appointments.
+    if (req.user.role === 'staff') {
+      const staff = await Staff.findOne({ user: req.user._id });
+      if (!staff) return res.status(403).json({ message: 'Not authorized' });
+      if (appointment.staff.toString() !== staff._id.toString()) {
+        return res.status(403).json({ message: 'Not authorized' });
+      }
+    }
+
     appointment.status = status;
     const updated = await appointment.save();
 
     // Optionally send email to customer about status change
     res.json(updated);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get logged-in staff's appointments
+// @route   GET /api/appointments/staff/me
+// @access  Private (staff)
+const getMyStaffAppointments = async (req, res) => {
+  try {
+    if (req.user.role !== 'staff') {
+      return res.status(403).json({ message: 'Staff access required' });
+    }
+
+    const staff = await Staff.findOne({ user: req.user._id });
+    if (!staff) {
+      return res.status(404).json({ message: 'Staff profile not found' });
+    }
+
+    const appointments = await Appointment.find({ staff: staff._id })
+      .populate('user', 'name email')
+      .populate('service', 'name price duration')
+      .sort('-date');
+
+    res.json(appointments);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -177,6 +211,7 @@ module.exports = {
   createAppointment,
   getMyAppointments,
   getAllAppointments,
+  getMyStaffAppointments,
   updateStatus,
   cancelAppointment,
   getStaffBookedSlots,

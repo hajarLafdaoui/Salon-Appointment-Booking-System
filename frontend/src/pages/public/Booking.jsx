@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
 import './Booking.css';
@@ -28,7 +28,6 @@ const Booking = () => {
     const [showMoreSlots, setShowMoreSlots] = useState(false);
     const [bookingConfirmed, setBookingConfirmed] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [bookingError, setBookingError] = useState(null);
     const [services, setServices] = useState([]);
     const [bookedSlots, setBookedSlots] = useState([]);
     const [staffPage, setStaffPage] = useState(1);
@@ -90,6 +89,7 @@ const Booking = () => {
             }
         };
         fetchServices();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [urlServiceId]);
 
     // Fetch booked slots for selected staff and date
@@ -128,6 +128,7 @@ const Booking = () => {
         };
 
         fetchBookedSlots();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedStaff, selectedDate]);
 
     // Close dropdown when clicking outside
@@ -201,14 +202,10 @@ const Booking = () => {
     };
 
     const handleConfirm = async () => {
-        setIsSubmitting(true);
-        setBookingError(null);
-
         try {
             const token = localStorage.getItem('token');
             if (!token) {
                 const msg = 'You must be logged in to book an appointment.';
-                setBookingError(msg);
                 showToast(msg, 'error');
                 setIsSubmitting(false);
                 return;
@@ -229,7 +226,6 @@ const Booking = () => {
             const serviceId = selectedService;
             if (!serviceId) {
                 const msg = 'Please select a service first.';
-                setBookingError(msg);
                 showToast(msg, 'error');
                 setIsSubmitting(false);
                 return;
@@ -256,7 +252,6 @@ const Booking = () => {
             if (!response.ok) {
                 const errMsg = data.message || 'Failed to create appointment.';
                 console.error('Appointment creation failed:', data);
-                setBookingError(errMsg);
                 showToast(`Booking failed: ${errMsg}`, 'error');
                 setIsSubmitting(false);
                 return;
@@ -270,7 +265,6 @@ const Booking = () => {
         } catch (err) {
             console.error('Unexpected error during booking:', err);
             const errMsg = 'An unexpected error occurred. Please try again.';
-            setBookingError(errMsg);
             showToast(`Error: ${errMsg}`, 'error');
         } finally {
             setIsSubmitting(false);
@@ -497,7 +491,7 @@ const Booking = () => {
                     <line x1="12" y1="8" x2="12" y2="12"/>
                     <line x1="12" y1="16" x2="12.01" y2="16"/>
                 </svg>
-                <span>Free cancellation up to <strong>24 hours</strong> before your appointment. By confirming, you agree to our <a href="#">booking policy</a>.</span>
+                <span>Free cancellation up to <strong>24 hours</strong> before your appointment. By confirming, you agree to our <a href="/policy">booking policy</a>.</span>
             </div>
 
         </div>

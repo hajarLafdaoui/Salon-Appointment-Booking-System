@@ -63,13 +63,13 @@ const Footer = () => {
                 <div className="footer-column">
                     <h4 className="footer-title">Follow Us</h4>
                     <div className="footer-social">
-                        <a href="#" className="social-link" aria-label="Instagram">
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Instagram">
                             <img src={instagramIcon} alt="Instagram" />
                         </a>
-                        <a href="#" className="social-link" aria-label="Facebook">
+                        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="social-link" aria-label="Facebook">
                             <img src={facebookIcon} alt="Facebook" />
                         </a>
-                        <a href="#" className="social-link emoji-link" aria-label="Twitter">𝕏</a>
+                        <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="social-link emoji-link" aria-label="Twitter">𝕏</a>
                     </div>
                 </div>
             </div>

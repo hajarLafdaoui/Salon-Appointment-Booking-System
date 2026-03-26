@@ -159,7 +159,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
   gap: 1.5rem;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
   min-height: 300px;
 }
 
@@ -201,14 +201,15 @@
 .service-pro-card {
   background: white;
   border-radius: 12px;
-  overflow: visible; /* Changed to allow dropdown to overflow box */
+  overflow: visible;
   border: 1px solid #e8dfd5;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
   display: flex;
-  flex-direction: row; /* Image will be on the right because of React order or explicit placement */
-  height: 140px;
+  flex-direction: row;
+  min-height: 140px;
   position: relative;
   transition: all 0.3s ease;
+  align-items: stretch;
 }
 
 .service-pro-card:hover {
@@ -218,11 +219,11 @@
 
 .card-image-wrap {
   flex: 0 0 35%;
-  height: 100%;
+  min-height: 140px;
   position: relative;
-  flex-shrink: 0;
-  overflow: hidden; /* Fixes image taking too much space/spilling out */
-  border-radius: 0 12px 12px 0; /* Ensures image follows parent's rounded corners */
+  overflow: hidden;
+  border-radius: 0 12px 12px 0;
+  align-self: stretch;
 }
 
 .card-image-wrap img {
@@ -324,10 +325,11 @@
 .card-body-pro {
   padding: 1rem 1.25rem;
   flex: 1;
-  width: 65%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: visible;
 }
 
 .category-tag {
@@ -345,18 +347,22 @@
   color: #1a1a1a;
   margin: 0.2rem 0;
   font-family: 'Glacial Indifference', sans-serif;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-desc {
   font-size: 0.75rem;
   color: #64748b;
-  line-height: 1.4;
-  margin-bottom: 0.5rem;
+  line-height: 1.5;
+  margin: 0.25rem 0 0.5rem;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  flex: 1;
 }
 
 .card-footer-metrics {
@@ -380,6 +386,63 @@
   font-size: 1.25rem;
   font-weight: 800;
   color: #1a1a1a;
+}
+
+/* Pagination Styles - Admin Dashboard */
+.admin-pagination-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding: 1rem 0;
+  border-top: 1px solid rgba(59, 32, 24, 0.1);
+}
+
+.pagination-info {
+  font-size: 0.9rem;
+  color: #666;
+  font-family: 'Glacial Indifference', sans-serif;
+}
+
+.pagination-controls-pro {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.pagination-btn-square {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d4c4b0;
+  background: white;
+  color: #3b2018;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Glacial Indifference', sans-serif;
+  font-weight: 500;
+}
+
+.pagination-btn-square:hover:not(:disabled) {
+  border-color: #3b2018;
+  background: #fdfaf7;
+  transform: translateY(-2px);
+}
+
+.pagination-btn-square.active {
+  background: #3b2018;
+  color: #f0cb37;
+  border-color: #3b2018;
+  box-shadow: 0 4px 12px rgba(59, 32, 24, 0.2);
+}
+
+.pagination-btn-square:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f5f5f5;
 }
 
 /* Modals */
@@ -648,4 +711,5 @@
   .services-toolbar { flex-direction: column; align-items: stretch; }
   .modal-form-grid { grid-template-columns: 1fr; }
   .form-group-half { grid-column: span 1; }
+  .admin-pagination-footer { flex-direction: column; gap: 1rem; }
 }

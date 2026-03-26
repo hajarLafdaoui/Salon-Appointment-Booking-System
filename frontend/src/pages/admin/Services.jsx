@@ -3,7 +3,6 @@ import axios from 'axios';
 import { 
   Plus, 
   Search, 
-  Filter, 
   Edit2, 
   Trash2, 
   Clock, 
@@ -11,7 +10,6 @@ import {
   Star, 
   X, 
   AlertTriangle, 
-  CheckCircle, 
   Grid, 
   Layers,
   MoreVertical,

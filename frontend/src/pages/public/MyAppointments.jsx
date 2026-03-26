@@ -45,6 +45,7 @@ const MyAppointments = () => {
 
     useEffect(() => {
         if (token) fetchAppointments();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [token]);
 
     const handleCancelClick = (app) => {

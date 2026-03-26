@@ -61,13 +61,14 @@ const Home = () => {
     }, []);
 
     useEffect(() => {
-        if (!loading && services.length > 0 && sliderRef.current) {
-            sliderRef.current.classList.add('animate');
+        const currentSlider = sliderRef.current;
+        if (!loading && services.length > 0 && currentSlider) {
+            currentSlider.classList.add('animate');
         }
 
         return () => {
-            if (sliderRef.current) {
-                sliderRef.current.classList.remove('animate');
+            if (currentSlider) {
+                currentSlider.classList.remove('animate');
             }
         };
     }, [services, loading]);

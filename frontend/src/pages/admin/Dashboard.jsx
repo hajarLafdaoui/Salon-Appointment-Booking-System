@@ -4,11 +4,8 @@ import {
   Users, 
   Calendar, 
   DollarSign, 
-  TrendingUp, 
   Scissors, 
   Clock, 
-  CheckCircle, 
-  AlertCircle,
   XCircle,
   Briefcase
 } from 'lucide-react';
@@ -56,7 +53,6 @@ const AdminDashboard = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const user = JSON.parse(localStorage.getItem('user'));
 
   useEffect(() => {
     const fetchDashboardData = async () => {

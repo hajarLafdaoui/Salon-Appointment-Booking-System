@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { User as UserIcon, Bell } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import searchIcon from '../../assets/icons/search-black.png';
 import './DashboardHeader.css';
 
@@ -8,6 +8,10 @@ const DashboardHeader = ({ user }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+
+  const role = user?.role || 'admin';
+  const roleLabel = role === 'staff' ? 'Staff' : role === 'admin' ? 'Admin' : 'Account';
+  const profileRoute = role === 'staff' ? '/staff/profile' : '/profile';
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -20,7 +24,7 @@ const DashboardHeader = ({ user }) => {
   }, []);
 
   const handleLogout = () => {
-    if (window.confirm('Are you sure you want to log out from the Admin Dashboard?')) {
+    if (window.confirm(`Are you sure you want to log out from the ${roleLabel} Dashboard?`)) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       window.dispatchEvent(new Event('storage'));
@@ -33,7 +37,7 @@ const DashboardHeader = ({ user }) => {
       <div className="header-left">
         <h1 className="welcome-text">
           Hello, <span className="highlight">{user?.name || 'Admin'}!</span>
-          <span className="role-tag">Admin</span>
+          <span className="role-tag">{roleLabel}</span>
         </h1>
       </div>
 
@@ -63,11 +67,11 @@ const DashboardHeader = ({ user }) => {
                 </div>
                 <div className="header-info">
                   <span className="user-name-display">{user?.name}</span>
-                  <span className="user-role-display">Administrator</span>
+                  <span className="user-role-display">{roleLabel}</span>
                 </div>
               </div>
               <div className="dropdown-divider" />
-              <Link to="/profile" className="dropdown-item" onClick={() => setDropdownOpen(false)}>
+              <Link to={profileRoute} className="dropdown-item" onClick={() => setDropdownOpen(false)}>
                 Profile
               </Link>
               <div className="dropdown-divider" />

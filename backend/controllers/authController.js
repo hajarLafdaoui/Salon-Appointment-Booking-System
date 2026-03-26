@@ -33,9 +33,21 @@ const registerUser = async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, name, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const identifier = email || name;
+    if (!identifier || !password) {
+      return res.status(400).json({ message: 'Name/Email and password are required.' });
+    }
+
+    // Support both:
+    // - email/password (customers/admin)
+    // - name/password (staff)
+    let user = await User.findOne({ email: identifier });
+    if (!user) {
+      user = await User.findOne({ name: identifier });
+    }
+
     if (user && (await user.matchPassword(password))) {
       res.json({
         _id: user._id,

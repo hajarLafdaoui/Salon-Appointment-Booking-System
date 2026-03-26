@@ -17,6 +17,10 @@ import AdminAppointments from './pages/admin/Appointments';
 import AdminServices from './pages/admin/Services';
 import AdminStaff from './pages/admin/Staff';
 import AdminCustomers from './pages/admin/Customers';
+import StaffDashboard from './pages/staff/StaffDashboard';
+import StaffAppointments from './pages/staff/StaffAppointments';
+import StaffSchedule from './pages/staff/StaffSchedule';
+import StaffProfile from './pages/staff/StaffProfile';
 
 function App() {
   return (
@@ -33,7 +37,10 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/my-appointments" element={<MyAppointments />} />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/staff/dashboard" element={<div>Staff Dashboard</div>} />
+            <Route path="/staff/dashboard" element={<StaffDashboard />} />
+            <Route path="/staff/appointments" element={<StaffAppointments />} />
+            <Route path="/staff/schedule" element={<StaffSchedule />} />
+            <Route path="/staff/profile" element={<StaffProfile />} />
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/appointments" element={<AdminAppointments />} />
             <Route path="/admin/services" element={<AdminServices />} />

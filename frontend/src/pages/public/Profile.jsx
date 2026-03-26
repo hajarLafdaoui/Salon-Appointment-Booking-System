@@ -35,6 +35,7 @@ const Profile = () => {
             });
             fetchUserStats();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     const fetchUserStats = async () => {
