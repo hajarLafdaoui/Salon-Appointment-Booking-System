@@ -35,17 +35,23 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, name, password } = req.body;
   try {
-    const identifier = email || name;
-    if (!identifier || !password) {
+    if ((!email && !name) || !password) {
       return res.status(400).json({ message: 'Name/Email and password are required.' });
     }
 
     // Support both:
-    // - email/password (customers/admin)
-    // - name/password (staff)
-    let user = await User.findOne({ email: identifier });
-    if (!user) {
-      user = await User.findOne({ name: identifier });
+    // - email/password (customers/admin and staff)
+    // - name/password (staff fallback)
+    let user = null;
+    if (email) {
+      const normalizedEmail = String(email).trim().toLowerCase();
+      user = await User.findOne({ email: normalizedEmail });
+    }
+
+    if (!user && name) {
+      const enteredName = String(name).trim();
+      // case-insensitive exact match
+      user = await User.findOne({ name: { $regex: `^${enteredName}$`, $options: 'i' } });
     }
 
     if (user && (await user.matchPassword(password))) {

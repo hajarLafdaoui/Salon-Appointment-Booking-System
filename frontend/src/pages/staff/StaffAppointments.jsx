@@ -84,6 +84,7 @@ const StaffAppointments = () => {
 
       // Update UI state
       setAppointments((prev) => prev.map((app) => (app._id === id ? { ...app, status: newStatus } : app)));
+      setSelectedAppointment((prev) => (prev?._id === id ? { ...prev, status: newStatus } : prev));
       setActiveMenu(null);
     } catch (err) {
       showToast(err?.response?.data?.message || 'Failed to update appointment.', 'error');
