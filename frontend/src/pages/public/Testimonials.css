@@ -63,6 +63,25 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
+/* Skeleton loader for testimonials */
+.testimonial-skeleton {
+    border-left-color: #e5e7eb;
+    gap: 0.75rem;
+}
+.skel-line {
+    height: 12px;
+    background: #ebebeb;
+    border-radius: 6px;
+    animation: shimmer 1.4s infinite;
+}
+.skel-line.short { width: 35%; }
+.skel-line.medium { width: 65%; }
+.skel-line.long { width: 100%; }
+@keyframes shimmer {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+
 .testimonial-rating {
     display: flex;
     gap: 0.3rem;
