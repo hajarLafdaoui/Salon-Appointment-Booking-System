@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
 import { Bell } from 'lucide-react';
 import searchIcon from '../../assets/icons/search-black.png';
 import LogoutConfirmModal from '../ui/LogoutConfirmModal';
@@ -14,6 +15,7 @@ const DashboardHeader = ({ user }) => {
   const dropdownRef = useRef(null);
   const notificationsRef = useRef(null);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const role = user?.role || 'admin';
   const roleLabel = role === 'staff' ? 'Staff' : role === 'admin' ? 'Admin' : 'Account';
@@ -55,10 +57,9 @@ const DashboardHeader = ({ user }) => {
   };
 
   const confirmLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.dispatchEvent(new Event('storage'));
-    navigate('/login');
+    logout();
+    setShowLogoutModal(false);
+    navigate('/');
   };
 
   const handleLogoutClick = () => {

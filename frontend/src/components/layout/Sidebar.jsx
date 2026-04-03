@@ -9,18 +9,19 @@ import {
   LogOut,
   FileText
 } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
 import LogoutConfirmModal from '../ui/LogoutConfirmModal';
 import './Sidebar.css';
 
 const Sidebar = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const confirmLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.dispatchEvent(new Event('storage'));
-    navigate('/login');
+    logout();
+    setShowLogoutModal(false);
+    navigate('/');
   };
 
   const handleLogoutClick = () => {

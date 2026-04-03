@@ -1,39 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../context/ToastContext';
 import LogoutConfirmModal from '../ui/LogoutConfirmModal';
 import './Navbar.css';
 
 const Navbar = () => {
     const [isHidden, setIsHidden] = useState(false);
     const [lastScrollY, setLastScrollY] = useState(0);
-    const [user, setUser] = useState(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+    const { user, isAuthenticated, logout } = useAuth();
+    const { showToast } = useToast();
 
-    useEffect(() => {
-        // Check if user is logged in
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-            setUser(JSON.parse(storedUser));
-        } else {
-            setUser(null);
-        }
-
-        // Listen for storage changes (logout from other tabs)
-        const handleStorageChange = () => {
-            const updatedUser = localStorage.getItem('user');
-            if (updatedUser) {
-                setUser(JSON.parse(updatedUser));
-            } else {
-                setUser(null);
-            }
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
-    }, [location]);
+    // No local user state needed - we use context now
+    // Effects for scroll and outside click remain unchanged
 
     useEffect(() => {
         const handleScroll = () => {
@@ -63,11 +46,9 @@ const Navbar = () => {
     }, [dropdownOpen]);
 
     const confirmLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setUser(null);
-        // Trigger storage event for other components
-        window.dispatchEvent(new Event('storage'));
+        logout();
+        setShowLogoutModal(false);
+        showToast('Logged out successfully', 'success');
         navigate('/');
     };
 

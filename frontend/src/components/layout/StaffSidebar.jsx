@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { LayoutGrid, Calendar, Clock, User, LogOut } from 'lucide-react';
+import { useAuth } from '../../hooks/useAuth';
 import Loader from '../ui/Loader';
 import LogoutConfirmModal from '../ui/LogoutConfirmModal';
 import './Sidebar.css';
@@ -9,12 +10,12 @@ const StaffSidebar = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const { logout } = useAuth();
 
   const confirmLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.dispatchEvent(new Event('storage'));
-    navigate('/login');
+    logout();
+    setShowLogoutModal(false);
+    navigate('/');
   };
 
   const handleLogoutClick = () => {

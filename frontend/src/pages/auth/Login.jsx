@@ -11,13 +11,15 @@ const Login = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [formData, setFormData] = useState({
         name: '',
-        email: '',
+        email: localStorage.getItem('rememberedEmail') || '',
         password: '',
         confirmPassword: ''
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false);
+    const [rememberMe, setRememberMe] = useState(() => {
+        return !!localStorage.getItem('rememberedEmail');
+    });
     const [postLoginLoading, setPostLoginLoading] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
@@ -73,12 +75,19 @@ const Login = () => {
                     return;
                 }
 
+                // Save or clear remembered email
+                if (rememberMe) {
+                    localStorage.setItem('rememberedEmail', formData.email);
+                } else {
+                    localStorage.removeItem('rememberedEmail');
+                }
+
                 login({
                     _id: data._id,
                     name: data.name,
                     email: data.email,
                     role: data.role
-                }, data.token);
+                }, data.token, rememberMe);
 
                 setPostLoginLoading(true);
 
@@ -237,13 +246,19 @@ const Login = () => {
 
                             {isLogin && (
                                 <div className="form-options">
-                                    <label className="remember-me">
+                                    <label className="remember-me-label">
                                         <input
                                             type="checkbox"
+                                            className="remember-me-input"
                                             checked={rememberMe}
                                             onChange={(e) => setRememberMe(e.target.checked)}
                                         />
-                                        <span>Remember me</span>
+                                        <span className="remember-me-custom">
+                                            <svg viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                <polyline points="1.5,5.5 4.5,8.5 10.5,1.5" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+                                            </svg>
+                                        </span>
+                                        <span className="remember-me-text">Remember me</span>
                                     </label>
                                     <a href="/forgot-password" className="forgot-password">Forgot password?</a>
                                 </div>

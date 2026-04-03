@@ -9,9 +9,9 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Check if user is already logged in (token stored)
-        const storedToken = localStorage.getItem('token');
-        const userData = localStorage.getItem('user');
+        // Check localStorage first (remember me), then sessionStorage (session only)
+        const storedToken = localStorage.getItem('token') || sessionStorage.getItem('token');
+        const userData = localStorage.getItem('user') || sessionStorage.getItem('user');
 
         if (storedToken && userData) {
             setToken(storedToken);
@@ -21,9 +21,19 @@ export const AuthProvider = ({ children }) => {
         setLoading(false);
     }, []);
 
-    const login = (userData, userToken) => {
-        localStorage.setItem('token', userToken);
-        localStorage.setItem('user', JSON.stringify(userData));
+    // rememberMe=true → localStorage (persists across sessions)
+    // rememberMe=false → sessionStorage (clears on tab/browser close)
+    const login = (userData, userToken, rememberMe = false) => {
+        const storage = rememberMe ? localStorage : sessionStorage;
+
+        // Clear both to avoid stale data from a previous preference
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+
+        storage.setItem('token', userToken);
+        storage.setItem('user', JSON.stringify(userData));
         setToken(userToken);
         setUser(userData);
         setIsAuthenticated(true);
@@ -32,6 +42,8 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
         setToken(null);
         setUser(null);
         setIsAuthenticated(false);
