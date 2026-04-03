@@ -71,6 +71,10 @@
     font-weight: 700;
     color: black;
     letter-spacing: 0.05em;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
 }
 
 /* Right Navigation */

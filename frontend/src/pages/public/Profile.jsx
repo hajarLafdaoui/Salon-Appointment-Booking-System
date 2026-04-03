@@ -13,6 +13,9 @@ const Profile = () => {
     const [fetching, setFetching] = useState(true);
     const [editMode, setEditMode] = useState(false);
     const [stats, setStats] = useState({ appointments: 0, spent: 0 });
+    const [avatarFile, setAvatarFile] = useState(null);
+    const [avatarPreview, setAvatarPreview] = useState(null);
+    const [removeAvatar, setRemoveAvatar] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -64,6 +67,21 @@ const Profile = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setAvatarFile(file);
+            setAvatarPreview(URL.createObjectURL(file));
+            setRemoveAvatar(false);
+        }
+    };
+
+    const handleRemoveAvatar = () => {
+        setAvatarFile(null);
+        setAvatarPreview(null);
+        setRemoveAvatar(true);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -75,23 +93,28 @@ const Profile = () => {
         }
 
         try {
-            const updateData = {
-                name: formData.name,
-                email: formData.email,
-                phone: formData.phone
-            };
-
+            const formDataObj = new FormData();
+            formDataObj.append('name', formData.name);
+            formDataObj.append('email', formData.email);
+            formDataObj.append('phone', formData.phone);
+            
             if (formData.newPassword) {
-                updateData.password = formData.newPassword;
+                formDataObj.append('password', formData.newPassword);
+            }
+
+            if (avatarFile) {
+                formDataObj.append('avatar', avatarFile);
+            }
+            if (removeAvatar) {
+                formDataObj.append('removeAvatar', 'true');
             }
 
             const response = await fetch('http://localhost:5000/api/auth/profile', {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(updateData)
+                body: formDataObj
             });
 
             const data = await response.json();
@@ -101,6 +124,8 @@ const Profile = () => {
                 showToast('Profile updated successfully', 'success');
                 setEditMode(false);
                 setFormData({ ...formData, currentPassword: '', newPassword: '', confirmPassword: '' });
+                setAvatarFile(null);
+                setRemoveAvatar(false);
             } else {
                 showToast(data.message || 'Update failed', 'error');
             }
@@ -113,12 +138,30 @@ const Profile = () => {
 
     if (!user) return <div className="profile-loading">Please log in to view profile</div>;
 
-    const renderProfileContent = () => (
-        <main className="profile-content">
+    const renderProfileContent = () => {
+        const currentAvatar = avatarPreview || (user.avatar && !removeAvatar ? `http://localhost:5000${user.avatar}` : null);
+
+        return (
+        <main className={`profile-content ${user?.role === 'admin' ? 'user-profile-admin' : ''}`}>
             <div className="profile-header-premium">
                 <div className="profile-avatar-large">
-                    {user.name?.charAt(0).toUpperCase()}
+                    {currentAvatar ? (
+                        <img src={currentAvatar} alt="Profile" className="profile-avatar-img" />
+                    ) : (
+                        user.name?.charAt(0).toUpperCase()
+                    )}
                 </div>
+                {editMode && (
+                    <div className="avatar-edit-actions">
+                        <label className="btn-upload-avatar">
+                            Upload Picture
+                            <input type="file" accept="image/*" onChange={handleAvatarChange} style={{display: 'none'}} />
+                        </label>
+                        {(currentAvatar || user.avatar) && (
+                            <button className="btn-remove-avatar" onClick={handleRemoveAvatar}>Remove</button>
+                        )}
+                    </div>
+                )}
                 <div className="profile-title-section">
                     <h1>{user.name}</h1>
                     <p className="profile-role-badge">{user.role}</p>
@@ -127,17 +170,19 @@ const Profile = () => {
             </div>
 
             <div className="profile-main-grid">
-                {/* Stats Section */}
-                <div className="profile-stats-card">
-                    <div className="stat-box">
-                        <span className="stat-number">{fetching ? '...' : stats.appointments}</span>
-                        <span className="stat-label">Total Bookings</span>
+                {/* Stats Section - Only show for customers, not admins */}
+                {(user.role !== 'admin' && user.role !== 'staff') && (
+                    <div className="profile-stats-card">
+                        <div className="stat-box">
+                            <span className="stat-number">{fetching ? '...' : stats.appointments}</span>
+                            <span className="stat-label">Total Bookings</span>
+                        </div>
+                        <div className="stat-box">
+                            <span className="stat-number">{fetching ? '...' : `$${stats.spent}`}</span>
+                            <span className="stat-label">Total Spent</span>
+                        </div>
                     </div>
-                    <div className="stat-box">
-                        <span className="stat-number">{fetching ? '...' : `$${stats.spent}`}</span>
-                        <span className="stat-label">Total Spent</span>
-                    </div>
-                </div>
+                )}
 
                 {/* Info/Edit Section */}
                 <div className="profile-info-card">
@@ -239,7 +284,8 @@ const Profile = () => {
                 </div>
             </div>
         </main>
-    );
+        );
+    };
 
     if (user.role === 'admin') {
         return <AdminLayout>{renderProfileContent()}</AdminLayout>;

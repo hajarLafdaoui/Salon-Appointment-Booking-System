@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import LogoutConfirmModal from '../ui/LogoutConfirmModal';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -7,6 +8,7 @@ const Navbar = () => {
     const [lastScrollY, setLastScrollY] = useState(0);
     const [user, setUser] = useState(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -60,13 +62,18 @@ const Navbar = () => {
         return () => document.removeEventListener('click', handleClickOutside);
     }, [dropdownOpen]);
 
-    const handleLogout = () => {
+    const confirmLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         setUser(null);
         // Trigger storage event for other components
         window.dispatchEvent(new Event('storage'));
         navigate('/');
+    };
+
+    const handleLogoutClick = () => {
+        setDropdownOpen(false);
+        setShowLogoutModal(true);
     };
 
 
@@ -99,7 +106,20 @@ const Navbar = () => {
 
                 {/* Center Logo */}
                 <div className="navbar-center">
-                    <span className="navbar-logo">Velora</span>
+                    <button
+                        className="navbar-logo clickable"
+                        onClick={() => {
+                            if (user?.role === 'admin') {
+                                navigate('/admin/dashboard');
+                            } else if (user?.role === 'staff') {
+                                navigate('/staff/dashboard');
+                            } else {
+                                navigate('/');
+                            }
+                        }}
+                    >
+                        Velora
+                    </button>
                 </div>
 
                 {/* Right Navigation Links and Button */}
@@ -110,14 +130,22 @@ const Navbar = () => {
                                 className="user-avatar"
                                 onClick={() => setDropdownOpen(!dropdownOpen)}
                             >
-                                {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                                {user.avatar ? (
+                                    <img src={`http://localhost:5000${user.avatar}`} alt="Avatar" style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%'}} />
+                                ) : (
+                                    user.name ? user.name.charAt(0).toUpperCase() : 'U'
+                                )}
                             </div>
 
                             {dropdownOpen && (
                                 <div className="user-dropdown">
                                     <div className="dropdown-header">
                                         <div className="header-avatar">
-                                            {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                                            {user.avatar ? (
+                                                <img src={`http://localhost:5000${user.avatar}`} alt="Avatar" style={{width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%'}} />
+                                            ) : (
+                                                user.name ? user.name.charAt(0).toUpperCase() : 'U'
+                                            )}
                                         </div>
                                         <span className="user-name-display">{user.name}</span>
                                     </div>
@@ -125,7 +153,7 @@ const Navbar = () => {
                                     <Link to="/my-appointments" className="dropdown-item" onClick={() => setDropdownOpen(false)}>My Appointments</Link>
                                     <Link to="/profile" className="dropdown-item" onClick={() => setDropdownOpen(false)}>Profile</Link>
                                     <div className="dropdown-divider" />
-                                    <button onClick={handleLogout} className="dropdown-item logout-item">Logout</button>
+                                    <button onClick={handleLogoutClick} className="dropdown-item logout-item">Logout</button>
                                 </div>
                             )}
                         </div>
@@ -134,6 +162,13 @@ const Navbar = () => {
                     ) : null}
                 </div>
             </div>
+
+            <LogoutConfirmModal 
+                isOpen={showLogoutModal} 
+                onClose={() => setShowLogoutModal(false)}
+                onConfirm={confirmLogout}
+                roleLabel="your account"
+            />
         </nav>
     );
 };

@@ -23,6 +23,7 @@ import {
 } from 'recharts';
 import { motion } from 'framer-motion';
 import AdminLayout from '../../components/layout/AdminLayout';
+import Loader from '../../components/ui/Loader';
 import './Dashboard.css';
 
 const StatCard = ({ title, value, label, trend, icon: Icon, color }) => (
@@ -73,7 +74,7 @@ const AdminDashboard = () => {
     fetchDashboardData();
   }, []);
 
-  if (loading) return <div className="dashboard-loading">Loading Dashboard...</div>;
+  if (loading) return <Loader message="Loading Dashboard..." />;
   if (error) return <div className="dashboard-error">{error}</div>;
 
   const { stats, charts, todayAppointmentsList } = data;

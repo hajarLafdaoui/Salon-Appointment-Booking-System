@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 const notificationSchema = mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    type: { type: String, enum: ['email', 'sms'], required: true },
-    subject: { type: String },
+    recipient: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+    recipientRole: { type: String, enum: ['admin', 'staff', 'customer'], required: false },
+    type: { type: String, enum: ['booking_new', 'booking_cancel', 'customer_new', 'booking_completed', 'reminder', 'system'], required: true },
     message: { type: String, required: true },
-    sentAt: { type: Date },
+    isRead: { type: Boolean, default: false }
   },
   { timestamps: true }
 );

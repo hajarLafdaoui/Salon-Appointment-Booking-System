@@ -116,14 +116,12 @@
 
 /* Services Container - now scrollable naturally */
 .services-container {
-    /* max-width: 1240px; */
-    width: 100%;
-    margin: 10px 2rem;
-    /* flex: 1; */
+    max-width: 1240px;
+    width: 95%;
+    margin: 20px auto;
     display: flex;
     flex-direction: column;
     overflow: visible;
-    /* Allow natural flow */
 }
 
 .loading,

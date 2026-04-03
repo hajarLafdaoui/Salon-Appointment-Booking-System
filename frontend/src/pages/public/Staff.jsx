@@ -9,26 +9,37 @@ import downIcon from '../../assets/icons/down.png';
 import './Staff.css';
 
 // Memoized Staff Card for zero-lag rendering
-const StaffProfileCard = memo(({ staff, onBook, onDetails, placeholder }) => {
+const StaffProfileCard = memo(({ staff, onBook, onDetails }) => {
+    const hasValidImage = staff.image && !staff.image.includes('via.placeholder.com') && staff.image.trim() !== '';
+
     return (
         <div className="staff-profile-card">
-            <div className="card-image-wrapper">
-                <img 
-                    src={staff.image || placeholder} 
-                    alt={staff.name} 
-                    className="staff-profile-img"
-                    loading="lazy"
-                    decoding="async"
-                />
-                <div className="staff-rating-badge">
-                    <span>★</span> {staff.rating || '4.9'}
+            {hasValidImage && (
+                <div className="card-image-wrapper">
+                    <img 
+                        src={staff.image} 
+                        alt={staff.name} 
+                        className="staff-profile-img"
+                        loading="lazy"
+                        decoding="async"
+                    />
+                    <div className="staff-rating-badge">
+                        <span>★</span> {staff.rating || '4.9'}
+                    </div>
                 </div>
-            </div>
+            )}
             
             <div className="card-details">
-                <div className="card-header-info">
-                    <h3 className="staff-full-name">{staff.name}</h3>
-                    <span className="staff-specialty-primary">{staff.specialty}</span>
+                <div className="card-header-info" style={!hasValidImage ? { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' } : {}}>
+                    <div>
+                        <h3 className="staff-full-name">{staff.name}</h3>
+                        <span className="staff-specialty-primary">{staff.specialty}</span>
+                    </div>
+                    {!hasValidImage && (
+                        <div style={{fontWeight: 600, fontSize: '0.9rem', color: '#2d2d2d', backgroundColor: 'rgba(0,0,0,0.05)', padding: '4px 10px', borderRadius: '50px'}}>
+                            <span style={{color: '#f1c40f'}}>★</span> {staff.rating || '4.9'}
+                        </div>
+                    )}
                 </div>
                 
                 <p className="staff-bio">{staff.bio}</p>
@@ -214,7 +225,6 @@ const Staff = ({ isLandingPage = false }) => {
                         staff={staff} 
                         onBook={handleBookNow} 
                         onDetails={handleOpenDetails} 
-                        placeholder={placeholderImage}
                     />
                 ))}
             </div>
@@ -241,12 +251,13 @@ const Staff = ({ isLandingPage = false }) => {
                                     setPage(1);
                                 }}
                             >
-                                <option value="">All Specialties</option>
-                                <option value="Hair Stylist">Hair Stylist</option>
-                                <option value="Colorist">Colorist</option>
-                                <option value="Makeup Artist">Makeup Artist</option>
-                                <option value="Nail Technician">Nail Technician</option>
-                                <option value="Esthetician">Esthetician</option>
+                                <option value="">All Categories</option>
+                                <option value="Hair">Hair</option>
+                                <option value="Skincare">Skincare</option>
+                                <option value="Nails">Nails</option>
+                                <option value="Makeup">Makeup</option>
+                                <option value="Brows & Lashes">Brows & Lashes</option>
+                                <option value="Spa & Massage">Spa & Massage</option>
                             </select>
                             <img src={downIcon} alt="Down" className="select-arrow-icon" />
                         </div>
@@ -317,7 +328,13 @@ const Staff = ({ isLandingPage = false }) => {
                             <button className="close-sidebar" onClick={handleCloseDetails}>×</button>
                             <div className="sidebar-profile-main">
                                 <div className="sidebar-avatar-wrapper">
-                                    <img src={selectedDetailsStaff.image || placeholderImage} alt={selectedDetailsStaff.name} />
+                                    {selectedDetailsStaff.image && !selectedDetailsStaff.image.includes('via.placeholder.com') ? (
+                                        <img src={selectedDetailsStaff.image} alt={selectedDetailsStaff.name} />
+                                    ) : (
+                                        <div style={{width: '100%', height: '100%', borderRadius: '20px', background: '#bf5128', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 'bold'}}>
+                                            {selectedDetailsStaff.name.charAt(0).toUpperCase()}
+                                        </div>
+                                    )}
                                     <span className="availability-dot"></span>
                                 </div>
                                 <div className="sidebar-info-main">

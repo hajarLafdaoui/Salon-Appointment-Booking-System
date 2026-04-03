@@ -4,6 +4,7 @@ import { useAuth } from '../../hooks/useAuth';
 import heroImage from '../../assets/images/2.jpg';
 import Navbar from '../../components/layout/Navbar';
 import Footer from '../../components/layout/Footer';
+import Loader from '../../components/ui/Loader';
 import './Auth.css';
 
 const Login = () => {
@@ -17,10 +18,11 @@ const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    const [postLoginLoading, setPostLoginLoading] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
     const { login } = useAuth();
-    
+
     // Get the destination and message from state
     const from = location.state?.from || null;
     const redirectMessage = location.state?.message || null;
@@ -77,17 +79,20 @@ const Login = () => {
                     email: data.email,
                     role: data.role
                 }, data.token);
-                
-                // Navigate to 'from' if it exists, otherwise use role-based logic
-                if (from) {
-                    navigate(from);
-                } else if (data.role === 'staff') {
-                    navigate('/staff/dashboard');
-                } else if (data.role === 'admin') {
-                    navigate('/admin/dashboard');
-                } else {
-                    navigate('/');
-                }
+
+                setPostLoginLoading(true);
+
+                setTimeout(() => {
+                    if (from) {
+                        navigate(from);
+                    } else if (data.role === 'staff') {
+                        navigate('/staff/dashboard');
+                    } else if (data.role === 'admin') {
+                        navigate('/admin/dashboard');
+                    } else {
+                        navigate('/');
+                    }
+                }, 2000);
             } else {
                 // Register
                 if (formData.password !== formData.confirmPassword) {
@@ -139,6 +144,10 @@ const Login = () => {
             setLoading(false);
         }
     };
+
+    if (postLoginLoading) {
+        return <Loader message="Welcome back! Taking you to your dashboard..." />;
+    }
 
     return (
         <div className="auth-wrapper">
@@ -196,9 +205,8 @@ const Login = () => {
                                     value={formData.email}
                                     onChange={handleChange}
                                     required
-                                    placeholder="Email or your staff name"
                                 />
-                                <label htmlFor="email" className="form-label">Name or Email</label>
+                                <label htmlFor="email" className="form-label">Email</label>
                             </div>
 
                             <div className="form-group">

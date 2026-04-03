@@ -21,12 +21,23 @@
   padding: 0 0.5rem;
 }
 
+.sidebar-logo.clickable {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-logo.clickable:hover {
+  border-radius: 8px;
+}
+
 .logo-text {
   font-family: 'Glacial Indifference', sans-serif;
   font-size: 1.8rem;
   font-weight: 700;
-  color: #3b2018; /* Main theme brown */
+  color: #3b2018;
+  /* Main theme brown */
   letter-spacing: 0.03em;
+  background: none;
 }
 
 .sidebar-nav {
@@ -51,13 +62,16 @@
 }
 
 .nav-item:hover {
-  background: #f7f3ed; /* Match theme soft background */
+  background: #f7f3ed;
+  /* Match theme soft background */
   color: #3b2018;
 }
 
 .nav-item.active {
-  background: #3b2018; /* Main theme brown */
-  color: #f0cb37; /* Accent gold */
+  background: #3b2018;
+  /* Main theme brown */
+  color: #f0cb37;
+  /* Accent gold */
   box-shadow: 0 4px 12px rgba(59, 32, 24, 0.15);
 }
 
@@ -98,16 +112,18 @@
     width: 70px;
     padding: 1.5rem 0.75rem;
   }
-  
-  .logo-text, .nav-item span, .logout-btn span {
+
+  .logo-text,
+  .nav-item span,
+  .logout-btn span {
     display: none;
   }
-  
+
   .sidebar-logo {
     justify-content: center;
     padding: 0;
   }
-  
+
   .nav-item {
     justify-content: center;
     padding: 0.75rem;

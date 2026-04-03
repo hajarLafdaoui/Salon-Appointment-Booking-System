@@ -1,6 +1,7 @@
 const Appointment = require('../models/Appointment');
 const Service = require('../models/Service');
 const Staff = require('../models/Staff');
+const Notification = require('../models/Notification');
 const { sendEmail } = require('../utils/sendEmail');
 
 // @desc    Create a new appointment (customer)
@@ -60,6 +61,25 @@ const createAppointment = async (req, res) => {
       text: `Your appointment for ${service.name} on ${startTime.toLocaleString()} is pending confirmation.`,
     }).catch(err => console.log('Email error:', err));
 
+    // Create notifications
+    const staffUser = await Staff.findById(staffId).populate('user');
+    const timeStr = startTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    
+    if (staffUser && staffUser.user) {
+        await Notification.create({
+            recipient: staffUser.user._id,
+            recipientRole: 'staff',
+            type: 'booking_new',
+            message: `You have a new booking at ${timeStr} (${service.name})`,
+        });
+    }
+
+    await Notification.create({
+        recipientRole: 'admin',
+        type: 'booking_new',
+        message: `New booking: ${service.name} with ${staffUser ? staffUser.name : 'Unknown'} at ${timeStr}`,
+    });
+
     res.status(201).json(populated);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -88,13 +108,13 @@ const getAllAppointments = async (req, res) => {
   try {
     const { date, staffId, status } = req.query;
     const filter = {};
-    if (date) filter.date = { $gte: new Date(date), $lt: new Date(new Date(date).setDate(new Date(date).getDate()+1)) };
+    if (date) filter.date = { $gte: new Date(date), $lt: new Date(new Date(date).setDate(new Date(date).getDate() + 1)) };
     if (staffId) filter.staff = staffId;
     if (status) filter.status = status;
 
     const appointments = await Appointment.find(filter)
       .populate('user', 'name email')
-      .populate('staff', 'specialty')
+      .populate('staff', 'name specialty bio experienceYears rating')
       .populate('service', 'name price')
       .sort('date');
     res.json(appointments);
@@ -123,6 +143,20 @@ const updateStatus = async (req, res) => {
 
     appointment.status = status;
     const updated = await appointment.save();
+
+    if (status === 'completed') {
+        const popAppt = await Appointment.findById(appointment._id)
+            .populate('user')
+            .populate('staff')
+            .populate('service');
+        if (popAppt.staff && popAppt.user && popAppt.service) {
+            await Notification.create({
+                recipientRole: 'admin',
+                type: 'booking_completed',
+                message: `${popAppt.staff.name} completed ${popAppt.service.name} for ${popAppt.user.name}`,
+            });
+        }
+    }
 
     // Optionally send email to customer about status change
     res.json(updated);
@@ -201,6 +235,31 @@ const cancelAppointment = async (req, res) => {
     // You might want to set status to cancelled instead of deleting
     appointment.status = 'cancelled';
     await appointment.save();
+
+    const popAppt = await Appointment.findById(appointment._id)
+        .populate('user')
+        .populate('staff')
+        .populate('service');
+    
+    if (popAppt && popAppt.service && popAppt.user) {
+        const timeStr = new Date(popAppt.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        if (popAppt.staff && popAppt.staff.user) {
+            await Notification.create({
+                recipient: popAppt.staff.user,
+                recipientRole: 'staff',
+                type: 'booking_cancel',
+                message: `Your ${timeStr} appointment was cancelled`,
+            });
+        }
+
+        await Notification.create({
+            recipientRole: 'admin',
+            type: 'booking_cancel',
+            message: `Booking cancelled: ${popAppt.service.name} by ${popAppt.user.name}`,
+        });
+    }
+
     res.json({ message: 'Appointment cancelled' });
   } catch (error) {
     res.status(500).json({ message: error.message });

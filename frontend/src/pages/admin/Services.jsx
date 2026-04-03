@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { 
-  Plus, 
-  Search, 
-  Edit2, 
-  Trash2, 
-  Clock, 
-  DollarSign, 
-  Star, 
-  X, 
-  AlertTriangle, 
-  Grid, 
+import {
+  Plus,
+  Search,
+  Edit2,
+  Trash2,
+  Clock,
+  DollarSign,
+  Star,
+  X,
+  AlertTriangle,
+  Grid,
   Layers,
   MoreVertical,
   ChevronRight,
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AdminLayout from '../../components/layout/AdminLayout';
+import Loader from '../../components/ui/Loader';
 import { useToast } from '../../context/ToastContext';
 import './Services.css';
 
@@ -30,13 +32,13 @@ const Services = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-  
+
   // Modals state
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editingService, setEditingService] = useState(null);
   const [serviceToDelete, setServiceToDelete] = useState(null);
-  
+
   // Form state
   const [formData, setFormData] = useState({
     name: '',
@@ -44,51 +46,49 @@ const Services = () => {
     price: '',
     duration: '',
     category: 'Hair',
-    imageFile: null, // For local upload
+    imageFile: null,
     isPopular: false
   });
 
   const [imagePreview, setImagePreview] = useState(null);
-
   const [activeMenu, setActiveMenu] = useState(null);
 
   const categories = ['All', 'Hair', 'Skincare', 'Nails', 'Makeup', 'Brows & Lashes', 'Spa & Massage'];
+  const location = useLocation();
 
+  // Define fetchServices first with useCallback to prevent unnecessary re-renders
+  const fetchServices = useCallback(async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      const res = await axios.get('http://localhost:5000/api/services', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setServices(res.data);
+    } catch (err) {
+      console.error('Failed to fetch services:', err);
+      showToast('Failed to load services.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }, [showToast]);
+
+  // Now useEffect can safely depend on fetchServices
   useEffect(() => {
     fetchServices();
     const handleOutsideClick = () => setActiveMenu(null);
     window.addEventListener('click', handleOutsideClick);
     return () => window.removeEventListener('click', handleOutsideClick);
-  }, []);
+  }, [fetchServices]);
 
-  const fetchServices = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/services');
-      setServices(response.data);
-    } catch (error) {
-      console.error('Error fetching services:', error);
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    // Set search term from navigation state
+    if (location.state?.search) {
+      setSearchTerm(location.state.search);
     }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value, type, checked, files } = e.target;
-    
-    if (type === 'file') {
-      const file = files[0];
-      if (file) {
-        setFormData({ ...formData, imageFile: file });
-        setImagePreview(URL.createObjectURL(file));
-      }
-    } else {
-      setFormData({
-        ...formData,
-        [name]: type === 'checkbox' ? checked : value
-      });
-    }
-  };
+  }, [location.state]);
 
   const resetForm = () => {
     setFormData({
@@ -102,6 +102,21 @@ const Services = () => {
     });
     setImagePreview(null);
     setEditingService(null);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked, files } = e.target;
+    if (type === 'file') {
+      const file = files[0];
+      if (file) {
+        setFormData(f => ({ ...f, imageFile: file }));
+        setImagePreview(URL.createObjectURL(file));
+      }
+    } else if (type === 'checkbox') {
+      setFormData(f => ({ ...f, [name]: checked }));
+    } else {
+      setFormData(f => ({ ...f, [name]: value }));
+    }
   };
 
   const handleEditClick = (service) => {
@@ -129,7 +144,7 @@ const Services = () => {
     try {
       const token = localStorage.getItem('token');
       const submitData = new FormData();
-      
+
       Object.keys(formData).forEach(key => {
         if (key === 'imageFile') {
           if (formData.imageFile) submitData.append('image', formData.imageFile);
@@ -139,7 +154,7 @@ const Services = () => {
       });
 
       const config = {
-        headers: { 
+        headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
         }
@@ -152,7 +167,7 @@ const Services = () => {
         await axios.post('http://localhost:5000/api/services', submitData, config);
         showToast('Service created successfully!');
       }
-      
+
       fetchServices();
       setShowAddModal(false);
       resetForm();
@@ -202,8 +217,8 @@ const Services = () => {
   const stats = {
     total: services.length,
     popular: services.filter(s => s.isPopular).length,
-    avgPrice: services.length > 0 
-      ? Math.round(services.reduce((acc, s) => acc + s.price, 0) / services.length) 
+    avgPrice: services.length > 0
+      ? Math.round(services.reduce((acc, s) => acc + s.price, 0) / services.length)
       : 0
   };
 
@@ -242,16 +257,16 @@ const Services = () => {
         <div className="services-toolbar">
           <div className="search-wrapper-premium">
             <Search className="search-icon-fixed" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search by service name..." 
+            <input
+              type="text"
+              placeholder="Search by service name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="filter-group-premium">
             {categories.map(cat => (
-              <button 
+              <button
                 key={cat}
                 className={`filter-tab ${selectedCategory === cat ? 'active' : ''}`}
                 onClick={() => setSelectedCategory(cat)}
@@ -264,19 +279,16 @@ const Services = () => {
 
         {/* Grid Display */}
         {loading ? (
-          <div className="services-loading">
-            <div className="loader-ring"></div>
-            <p>Loading services...</p>
-          </div>
+          <Loader message="Loading services..." />
         ) : filteredServices.length > 0 ? (
           <>
-            <motion.div 
+            <motion.div
               className="services-grid-premium"
               layout
             >
               <AnimatePresence>
                 {currentServices.map((service) => (
-                  <motion.div 
+                  <motion.div
                     key={service._id}
                     className="service-pro-card"
                     initial={{ opacity: 0, y: 20 }}
@@ -287,7 +299,7 @@ const Services = () => {
                       <div className="card-header-actions">
                         <div className="category-tag">{service.category}</div>
                         <div className="action-menu-wrap" onClick={(e) => e.stopPropagation()}>
-                          <button 
+                          <button
                             className="dots-action-btn"
                             onClick={() => setActiveMenu(activeMenu === service._id ? null : service._id)}
                           >
@@ -304,7 +316,7 @@ const Services = () => {
 
                       <h3>{service.name}</h3>
                       <p className="card-desc">{service.description || 'Professional service tailored to your needs.'}</p>
-                      
+
                       <div className="card-footer-metrics">
                         <div className="metric-item">
                           <Clock size={14} />
@@ -330,14 +342,14 @@ const Services = () => {
                   Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, filteredServices.length)} of {filteredServices.length}
                 </div>
                 <div className="pagination-controls-pro">
-                  <button 
+                  <button
                     className="pagination-btn-square"
                     disabled={currentPage === 1}
                     onClick={() => handlePageChange(currentPage - 1)}
                   >
                     <ChevronLeft size={18} />
                   </button>
-                  
+
                   {[...Array(totalPages)].map((_, i) => (
                     <button
                       key={i + 1}
@@ -348,7 +360,7 @@ const Services = () => {
                     </button>
                   ))}
 
-                  <button 
+                  <button
                     className="pagination-btn-square"
                     disabled={currentPage === totalPages}
                     onClick={() => handlePageChange(currentPage + 1)}
@@ -372,7 +384,7 @@ const Services = () => {
         <AnimatePresence>
           {showAddModal && (
             <div className="modal-overlay-blur">
-              <motion.div 
+              <motion.div
                 className="service-form-modal"
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -386,21 +398,21 @@ const Services = () => {
                 <form className="modal-form-grid" onSubmit={handleSubmit}>
                   <div className="form-group-full">
                     <label>Service Name</label>
-                    <input 
-                      type="text" 
-                      name="name" 
-                      required 
+                    <input
+                      type="text"
+                      name="name"
+                      required
                       placeholder="e.g., Professional Haircut"
                       value={formData.name}
-                      onChange={handleInputChange} 
+                      onChange={handleInputChange}
                     />
                   </div>
 
                   <div className="form-group-full">
                     <label>Description</label>
-                    <textarea 
-                      name="description" 
-                      rows="3" 
+                    <textarea
+                      name="description"
+                      rows="3"
                       placeholder="Short description of the service..."
                       value={formData.description}
                       onChange={handleInputChange}
@@ -409,10 +421,10 @@ const Services = () => {
 
                   <div className="form-group-half">
                     <label>Price ($)</label>
-                    <input 
-                      type="number" 
-                      name="price" 
-                      required 
+                    <input
+                      type="number"
+                      name="price"
+                      required
                       placeholder="25"
                       value={formData.price}
                       onChange={handleInputChange}
@@ -421,10 +433,10 @@ const Services = () => {
 
                   <div className="form-group-half">
                     <label>Duration (mins)</label>
-                    <input 
-                      type="number" 
-                      name="duration" 
-                      required 
+                    <input
+                      type="number"
+                      name="duration"
+                      required
                       placeholder="30"
                       value={formData.duration}
                       onChange={handleInputChange}
@@ -443,10 +455,10 @@ const Services = () => {
                   <div className="form-group-half">
                     <label>Service Image</label>
                     <div className="file-upload-pro">
-                      <input 
-                        type="file" 
+                      <input
+                        type="file"
                         id="serviceImage"
-                        name="image" 
+                        name="image"
                         accept="image/*"
                         onChange={handleInputChange}
                         style={{ display: 'none' }}
@@ -465,9 +477,9 @@ const Services = () => {
 
                   <div className="form-group-checkbox">
                     <label className="checkbox-wrap">
-                      <input 
-                        type="checkbox" 
-                        name="isPopular" 
+                      <input
+                        type="checkbox"
+                        name="isPopular"
                         checked={formData.isPopular}
                         onChange={handleInputChange}
                       />
@@ -489,7 +501,7 @@ const Services = () => {
         <AnimatePresence>
           {showDeleteModal && (
             <div className="modal-overlay-blur">
-              <motion.div 
+              <motion.div
                 className="delete-modal-pro"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}

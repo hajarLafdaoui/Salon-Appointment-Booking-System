@@ -1,32 +1,43 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Search, Filter, Users, UserCheck, DollarSign, X } from 'lucide-react';
 import AdminLayout from '../../components/layout/AdminLayout';
+import Loader from '../../components/ui/Loader';
 import './Customers.css';
 
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Filtering and searching
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
-  
+
   // Modal state
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const location = useLocation();
 
   useEffect(() => {
     fetchCustomers();
   }, []);
 
+  useEffect(() => {
+    // Set search term from navigation state
+    if (location.state?.search) {
+      setSearchTerm(location.state.search);
+    }
+  }, [location.state]);
+
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+      const token = localStorage.getItem('token');
       const res = await fetch('http://localhost:5000/api/users/customers', {
         headers: {
-          Authorization: `Bearer ${userInfo?.token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -38,7 +49,7 @@ const Customers = () => {
       setCustomers(data);
     } catch (err) {
       setError(err.message || 'Error loading customers');
-      
+
       // Fallback dummy data if API fails to show design
       setCustomers([
         {
@@ -69,7 +80,7 @@ const Customers = () => {
           bookingHistory: [
             { _id: 'h3', serviceName: 'Balayage', date: '2023-11-05T11:00:00.000Z', price: 150, status: 'completed' }
           ]
-        }
+        },
       ]);
     } finally {
       setLoading(false);
@@ -88,13 +99,13 @@ const Customers = () => {
 
   const filteredCustomers = useMemo(() => {
     return customers.filter((c) => {
-      const matchesSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                            c.email.toLowerCase().includes(searchTerm.toLowerCase());
-      
+      const matchesSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        c.email.toLowerCase().includes(searchTerm.toLowerCase());
+
       let matchesStatus = true;
       if (statusFilter === 'active') matchesStatus = c.isActive !== false;
       if (statusFilter === 'inactive') matchesStatus = c.isActive === false;
-      
+
       return matchesSearch && matchesStatus;
     });
   }, [customers, searchTerm, statusFilter]);
@@ -104,7 +115,7 @@ const Customers = () => {
     const total = customers.length;
     const active = customers.filter(c => c.isActive !== false).length;
     const totalRevenue = customers.reduce((sum, c) => sum + (c.totalSpent || 0), 0);
-    
+
     return { total, active, totalRevenue };
   }, [customers]);
 
@@ -120,7 +131,7 @@ const Customers = () => {
   return (
     <AdminLayout>
       <div className="customers-container">
-        
+
         {/* Header Section */}
         <header className="page-header-compact">
           <div className="header-titles">
@@ -158,17 +169,17 @@ const Customers = () => {
         <div className="toolbar-compact">
           <div className="sm-search-wrap">
             <Search className="sm-search-icon" size={16} />
-            <input 
-              type="text" 
-              placeholder="Search by name or email..." 
+            <input
+              type="text"
+              placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="filter-select">
             <Filter size={14} />
-            <select 
-              value={statusFilter} 
+            <select
+              value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
             >
               <option value="all">Status: All</option>
@@ -181,7 +192,7 @@ const Customers = () => {
         {/* Main Table Content */}
         <div className="customers-table-container">
           {loading ? (
-            <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>Loading customers...</div>
+            <Loader message="Loading customers..." />
           ) : filteredCustomers.length > 0 ? (
             <table className="modern-table">
               <thead>
@@ -217,7 +228,7 @@ const Customers = () => {
                       </span>
                     </td>
                     <td>
-                      <button 
+                      <button
                         className="action-btn"
                         onClick={() => handleViewCustomer(customer)}
                       >
@@ -229,9 +240,9 @@ const Customers = () => {
               </tbody>
             </table>
           ) : (
-             <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>
-                No customers found. Try adjusting your search.
-             </div>
+            <div style={{ textAlign: 'center', padding: '3rem', color: '#64748b' }}>
+              No customers found. Try adjusting your search.
+            </div>
           )}
         </div>
 
@@ -241,9 +252,9 @@ const Customers = () => {
             <div className="details-modal" onClick={e => e.stopPropagation()}>
               <div className="modal-header">
                 <h3>{selectedCustomer.name}'s Profile</h3>
-                <button className="close-modal" onClick={closeModal}><X size={20}/></button>
+                <button className="close-modal" onClick={closeModal}><X size={20} /></button>
               </div>
-              
+
               <div className="modal-body-compact">
                 <div className="compact-details-grid">
                   <div className="compact-detail-item">

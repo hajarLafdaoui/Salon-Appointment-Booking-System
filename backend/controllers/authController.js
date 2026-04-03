@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 const generateToken = require('../utils/generateToken');
 
 // @desc    Register a new user
@@ -13,12 +14,20 @@ const registerUser = async (req, res) => {
     }
     const user = await User.create({ name, email, password, role, phone });
     if (user) {
+      if (!role || role === 'customer' || role === 'user') {
+          await Notification.create({
+              recipientRole: 'admin',
+              type: 'customer_new',
+              message: `New customer registered: ${user.name}`,
+          }).catch(err => console.error("Notification push error:", err));
+      }
       res.status(201).json({
         _id: user._id,
         name: user.name,
         email: user.email,
         role: user.role,
         phone: user.phone,
+        avatar: user.avatar,
         token: generateToken(user._id),
       });
     } else {
@@ -61,6 +70,7 @@ const loginUser = async (req, res) => {
         email: user.email,
         role: user.role,
         phone: user.phone,
+        avatar: user.avatar,
         token: generateToken(user._id),
       });
     } else {
@@ -99,6 +109,12 @@ const updateUserProfile = async (req, res) => {
         user.password = req.body.password;
       }
 
+      if (req.file) {
+        user.avatar = `/${req.file.path.replace(/\\/g, '/')}`;
+      } else if (req.body.removeAvatar === 'true') {
+        user.avatar = null;
+      }
+
       const updatedUser = await user.save();
 
       res.json({
@@ -107,6 +123,7 @@ const updateUserProfile = async (req, res) => {
         email: updatedUser.email,
         role: updatedUser.role,
         phone: updatedUser.phone,
+        avatar: updatedUser.avatar,
         token: generateToken(updatedUser._id),
       });
     } else {

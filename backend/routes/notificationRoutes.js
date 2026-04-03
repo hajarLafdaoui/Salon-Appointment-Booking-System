@@ -1,12 +1,15 @@
 const express = require('express');
-const { getNotifications, updateNotification } = require('../controllers/notificationController');
-const { protect, admin } = require('../middleware/authMiddleware');
+const { getNotifications, markAsRead, markAllAsRead } = require('../controllers/notificationController');
+const { protect } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.route('/')
-  .get(protect, admin, getNotifications);
+  .get(protect, getNotifications);
 
-router.route('/:id')
-  .put(protect, admin, updateNotification);
+router.route('/read-all')
+  .put(protect, markAllAsRead);
+
+router.route('/:id/read')
+  .put(protect, markAsRead);
 
 module.exports = router;

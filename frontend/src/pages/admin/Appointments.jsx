@@ -1,21 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { 
-  Search, 
-  Filter, 
-  Download, 
-  MoreVertical, 
-  Eye, 
-  CheckCircle, 
-  XCircle, 
-  Check, 
-  Calendar, 
-  Clock, 
+import { useLocation } from 'react-router-dom';
+import {
+  Search,
+  Filter,
+  Download,
+  MoreVertical,
+  Eye,
+  CheckCircle,
+  XCircle,
+  Check,
+  Calendar,
+  Clock,
   FileText,
-  X 
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AdminLayout from '../../components/layout/AdminLayout';
+import Loader from '../../components/ui/Loader';
 import './Appointments.css';
 
 const StatusBadge = ({ status }) => {
@@ -43,10 +45,18 @@ const Appointments = () => {
   const [activeMenu, setActiveMenu] = useState(null);
 
   const menuRef = useRef(null);
+  const location = useLocation();
 
   useEffect(() => {
     fetchAppointments();
   }, []);
+
+  useEffect(() => {
+    // Set search term from navigation state
+    if (location.state?.search) {
+      setSearchTerm(location.state.search);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -80,7 +90,7 @@ const Appointments = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       // Refresh local state to reflect update
-      setAppointments(appointments.map(app => 
+      setAppointments(appointments.map(app =>
         app._id === id ? { ...app, status: newStatus } : app
       ));
       setActiveMenu(null);
@@ -117,17 +127,17 @@ const Appointments = () => {
 
   // Filter Logic
   const filteredAppointments = appointments.filter(app => {
-    const matchesSearch = 
-      app.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const matchesSearch =
+      app.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.service?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
-    
+
     // Simple date filter logic
     const appDate = new Date(app.date);
     const today = new Date();
-    today.setHours(0,0,0,0);
-    
+    today.setHours(0, 0, 0, 0);
+
     let matchesDate = true;
     if (dateFilter === 'today') {
       matchesDate = appDate.toDateString() === today.toDateString();
@@ -136,7 +146,7 @@ const Appointments = () => {
       nextWeek.setDate(today.getDate() + 7);
       matchesDate = appDate >= today && appDate < nextWeek;
     }
-    
+
     return matchesSearch && matchesStatus && matchesDate;
   });
 
@@ -199,14 +209,14 @@ const Appointments = () => {
         <div className="toolbar-compact">
           <div className="search-box-compact">
             <Search size={18} className="search-icon-inside" />
-            <input 
-              type="text" 
-              placeholder="Search customer, service..." 
+            <input
+              type="text"
+              placeholder="Search customer, service..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
+
           <div className="filters-group">
             <div className="filter-select">
               <Filter size={16} />
@@ -218,7 +228,7 @@ const Appointments = () => {
                 <option value="cancelled">Cancelled</option>
               </select>
             </div>
-            
+
             <div className="filter-select">
               <Calendar size={16} />
               <select value={dateFilter} onChange={(e) => setDateFilter(e.target.value)}>
@@ -233,7 +243,7 @@ const Appointments = () => {
         {/* Main Table Content */}
         <div className="table-wrapper-compact shadow-sm">
           {loading ? (
-            <div className="loading-state">Loading appointments...</div>
+            <Loader message="Loading appointments..." />
           ) : filteredAppointments.length > 0 ? (
             <table className="modern-table">
               <thead>
@@ -250,7 +260,7 @@ const Appointments = () => {
               <tbody>
                 <AnimatePresence>
                   {filteredAppointments.map((app) => (
-                    <motion.tr 
+                    <motion.tr
                       key={app._id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -289,13 +299,13 @@ const Appointments = () => {
                       </td>
                       <td className="actions-cell">
                         <div className="menu-container" ref={activeMenu === app._id ? menuRef : null}>
-                          <button 
+                          <button
                             className="actions-trigger"
                             onClick={() => setActiveMenu(activeMenu === app._id ? null : app._id)}
                           >
                             <MoreVertical size={18} />
                           </button>
-                          
+
                           {activeMenu === app._id && (
                             <div className="actions-dropdown-compact">
                               <button onClick={() => {
@@ -305,19 +315,19 @@ const Appointments = () => {
                               }}>
                                 <Eye size={14} /> View Details
                               </button>
-                              
+
                               {app.status === 'pending' && (
                                 <button onClick={() => updateStatus(app._id, 'confirmed')} className="confirm-opt">
                                   <Check size={14} /> Confirm
                                 </button>
                               )}
-                              
+
                               {app.status === 'confirmed' && (
                                 <button onClick={() => updateStatus(app._id, 'completed')} className="complete-opt">
                                   <CheckCircle size={14} /> Complete
                                 </button>
                               )}
-                              
+
                               {app.status !== 'cancelled' && app.status !== 'completed' && (
                                 <button onClick={() => updateStatus(app._id, 'cancelled')} className="cancel-opt">
                                   <XCircle size={14} /> Cancel
@@ -355,8 +365,8 @@ const Appointments = () => {
       <AnimatePresence>
         {showModal && selectedAppointment && (
           <div className="modal-overlay" onClick={() => setShowModal(false)}>
-            <motion.div 
-              className="details-modal" 
+            <motion.div
+              className="details-modal"
               onClick={(e) => e.stopPropagation()}
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -366,8 +376,9 @@ const Appointments = () => {
                 <h3>Appointment Details</h3>
                 <button className="close-modal" onClick={() => setShowModal(false)}><X size={24} /></button>
               </div>
-              
+
               <div className="modal-body-compact">
+                <div className="section-title">Customer</div>
                 <div className="modal-header-compact">
                   <div className="compact-avatar">
                     {selectedAppointment.user?.name?.charAt(0).toUpperCase()}
@@ -378,14 +389,25 @@ const Appointments = () => {
                   </div>
                 </div>
 
+                {selectedAppointment.staff?.name && (
+                  <>
+                    <div className="section-title">Staff</div>
+                    <div className="modal-header-compact staff-section">
+                      <div className="compact-avatar staff-avatar">
+                        {selectedAppointment.staff.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="compact-info">
+                        <h4>{selectedAppointment.staff.name}</h4>
+                        <p>{selectedAppointment.staff.specialty}</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+
                 <div className="compact-details-grid">
                   <div className="compact-detail-item">
                     <span className="label">Service</span>
                     <span className="value">{selectedAppointment.service?.name}</span>
-                  </div>
-                  <div className="compact-detail-item">
-                    <span className="label">Staff</span>
-                    <span className="value">{selectedAppointment.staff?.name || 'Assigned'}</span>
                   </div>
                   <div className="compact-detail-item">
                     <span className="label">Date & Time</span>
@@ -404,7 +426,7 @@ const Appointments = () => {
                   <StatusBadge status={selectedAppointment.status} />
                 </div>
               </div>
-              
+
               <div className="modal-footer-compact">
                 {selectedAppointment.status === 'pending' && (
                   <button className="btn-primary-compact" onClick={() => {

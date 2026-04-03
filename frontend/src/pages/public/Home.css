@@ -186,7 +186,7 @@
 .services-title {
     font-family: 'Glacial Indifference', sans-serif;
     font-size: 2.5rem;
-    font-weight: 700;
+    font-weight: normal;
     color: #333;
     margin: 0 0 1rem 0;
     letter-spacing: -0.02em;
@@ -299,7 +299,7 @@
 .service-title {
     font-family: 'Glacial Indifference', sans-serif;
     font-size: 0.8rem;
-    font-weight: 700;
+    font-weight: normal;
     color: #333;
     margin: 0;
 }

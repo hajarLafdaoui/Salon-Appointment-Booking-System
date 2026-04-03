@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import {
   Plus, Search, Edit2, Trash2, X, AlertTriangle,
@@ -58,23 +59,24 @@ const StatPill = ({ icon: Icon, label, value, variant }) => (
 ═══════════════════════════════════════════════ */
 const StaffAdmin = () => {
   const { showToast } = useToast();
+  const location = useLocation();
 
-  const [staffList, setStaffList]     = useState([]);
+  const [staffList, setStaffList] = useState([]);
   const [allServices, setAllServices] = useState([]);
-  const [loading, setLoading]         = useState(true);
-  const [searchTerm, setSearchTerm]   = useState('');
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
-  const [currentPage, setCurrentPage]   = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const ITEMS = 6;
 
-  const [showModal, setShowModal]           = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [editingStaff, setEditingStaff]     = useState(null);
-  const [staffToDelete, setStaffToDelete]   = useState(null);
-  const [formData, setFormData]             = useState(defaultForm);
-  const [imagePreview, setImagePreview]     = useState(null);
-  const [activeMenu, setActiveMenu]         = useState(null);
-  const [saving, setSaving]                 = useState(false);
+  const [editingStaff, setEditingStaff] = useState(null);
+  const [staffToDelete, setStaffToDelete] = useState(null);
+  const [formData, setFormData] = useState(defaultForm);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [activeMenu, setActiveMenu] = useState(null);
+  const [saving, setSaving] = useState(false);
   const menuRef = useRef(null);
 
   /* ── Fetch ── */
@@ -88,6 +90,13 @@ const StaffAdmin = () => {
     return () => document.removeEventListener('mousedown', close);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    // Set search term from navigation state
+    if (location.state?.search) {
+      setSearchTerm(location.state.search);
+    }
+  }, [location.state]);
 
   useEffect(() => { setCurrentPage(1); }, [searchTerm, filterStatus]);
 
@@ -154,7 +163,7 @@ const StaffAdmin = () => {
     setEditingStaff(null);
   };
 
-  const openAdd  = () => { resetForm(); setShowModal(true); };
+  const openAdd = () => { resetForm(); setShowModal(true); };
   const openEdit = (member) => {
     setEditingStaff(member);
     setFormData({
@@ -253,10 +262,10 @@ const StaffAdmin = () => {
   });
 
   const totalPages = Math.ceil(filtered.length / ITEMS);
-  const paginated  = filtered.slice((currentPage - 1) * ITEMS, currentPage * ITEMS);
+  const paginated = filtered.slice((currentPage - 1) * ITEMS, currentPage * ITEMS);
   const stats = {
-    total:    staffList.length,
-    active:   staffList.filter(m => m.isActive).length,
+    total: staffList.length,
+    active: staffList.filter(m => m.isActive).length,
     inactive: staffList.filter(m => !m.isActive).length,
   };
 
@@ -279,9 +288,9 @@ const StaffAdmin = () => {
 
         {/* ── STAT PILLS ── */}
         <div className="sm-stats">
-          <StatPill icon={Users}     label="Total Staff"    value={stats.total}    variant="neutral"  />
-          <StatPill icon={UserCheck} label="Active"         value={stats.active}   variant="green"    />
-          <StatPill icon={UserX}     label="Inactive"       value={stats.inactive} variant="red"      />
+          <StatPill icon={Users} label="Total Staff" value={stats.total} variant="neutral" />
+          <StatPill icon={UserCheck} label="Active" value={stats.active} variant="green" />
+          <StatPill icon={UserX} label="Inactive" value={stats.inactive} variant="red" />
         </div>
 
         {/* ── TOOLBAR ── */}
@@ -571,10 +580,15 @@ const StaffAdmin = () => {
                         />
                       </div>
                     )}
-                    {/* Specialty */}
+                    {/* Category (Specialty) */}
                     <div className="sm-field">
-                      <label>Specialty <span className="req">*</span></label>
-                      <input type="text" name="specialty" required placeholder="e.g. Nail Technician" value={formData.specialty} onChange={handleInput} />
+                      <label>Category <span className="req">*</span></label>
+                      <select name="specialty" required value={formData.specialty} onChange={handleInput}>
+                        <option value="" disabled>Select Category</option>
+                        {['Hair', 'Skincare', 'Nails', 'Makeup', 'Brows & Lashes', 'Spa & Massage'].map(cat => (
+                           <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                      </select>
                     </div>
                     {/* Password (add only) */}
                     {!editingStaff && (

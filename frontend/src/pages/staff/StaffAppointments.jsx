@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { 
-  Search, 
-  Filter, 
-  MoreVertical, 
-  Eye, 
-  CheckCircle, 
-  XCircle, 
-  Check, 
-  Calendar, 
-  X 
+import {
+  Search,
+  Filter,
+  MoreVertical,
+  Eye,
+  CheckCircle,
+  XCircle,
+  Check,
+  Calendar,
+  X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import StaffLayout from '../../components/layout/StaffLayout';
+import Loader from '../../components/ui/Loader';
 import { useToast } from '../../context/ToastContext';
 import '../admin/Appointments.css';
 
@@ -93,12 +94,12 @@ const StaffAppointments = () => {
 
   // Filter Logic
   const filteredAppointments = appointments.filter(app => {
-    const matchesSearch = 
-      app.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    const matchesSearch =
+      app.user?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.service?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesStatus = statusFilter === 'all' || app.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -117,14 +118,14 @@ const StaffAppointments = () => {
         <div className="toolbar-compact">
           <div className="search-box-compact">
             <Search size={18} className="search-icon-inside" />
-            <input 
-              type="text" 
-              placeholder="Search customer, service..." 
+            <input
+              type="text"
+              placeholder="Search customer, service..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
+
           <div className="filters-group">
             <div className="filter-select">
               <Filter size={16} />
@@ -142,7 +143,7 @@ const StaffAppointments = () => {
         {/* Main Table Content */}
         <div className="table-wrapper-compact shadow-sm">
           {loading ? (
-            <div className="loading-state">Loading appointments...</div>
+            <Loader message="Loading appointments..." />
           ) : filteredAppointments.length > 0 ? (
             <table className="modern-table">
               <thead>
@@ -158,7 +159,7 @@ const StaffAppointments = () => {
               <tbody>
                 <AnimatePresence>
                   {filteredAppointments.map((app) => (
-                    <motion.tr 
+                    <motion.tr
                       key={app._id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -194,13 +195,13 @@ const StaffAppointments = () => {
                       </td>
                       <td className="actions-cell">
                         <div className="menu-container" ref={activeMenu === app._id ? menuRef : null}>
-                          <button 
+                          <button
                             className="actions-trigger"
                             onClick={() => setActiveMenu(activeMenu === app._id ? null : app._id)}
                           >
                             <MoreVertical size={18} />
                           </button>
-                          
+
                           {activeMenu === app._id && (
                             <div className="actions-dropdown-compact">
                               <button onClick={() => {
@@ -252,8 +253,8 @@ const StaffAppointments = () => {
       <AnimatePresence>
         {showModal && selectedAppointment && (
           <div className="modal-overlay" onClick={() => setShowModal(false)}>
-            <motion.div 
-              className="details-modal" 
+            <motion.div
+              className="details-modal"
               onClick={(e) => e.stopPropagation()}
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -263,7 +264,7 @@ const StaffAppointments = () => {
                 <h3>Appointment Details</h3>
                 <button className="close-modal" onClick={() => setShowModal(false)}><X size={24} /></button>
               </div>
-              
+
               <div className="modal-body-compact">
                 <div className="modal-header-compact">
                   <div className="compact-avatar">

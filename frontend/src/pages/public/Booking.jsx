@@ -75,7 +75,7 @@ const Booking = () => {
                 if (!res.ok) throw new Error('Failed to fetch services');
                 const data = await res.json();
                 setServices(data);
-                
+
                 if (urlServiceId) {
                     const matched = data.find(s => s._id === urlServiceId);
                     if (matched) {
@@ -112,7 +112,7 @@ const Booking = () => {
                 });
                 if (!response.ok) throw new Error('Failed to fetch booked slots');
                 const data = await response.json();
-                
+
                 // Assuming data is an array of appointments, extract the times
                 const times = data.map(app => {
                     const d = new Date(app.date);
@@ -279,12 +279,17 @@ const Booking = () => {
         }
     };
 
+    /* ─── Derived State ─── */
+    const selectedStaffObj = staffMembers.find(s => s._id === selectedStaff);
+    const selectedServiceObj = services.find(s => s._id === selectedService);
+    const availableStaff = staffMembers.filter(s => !selectedServiceObj || s.specialty === selectedServiceObj.category);
+
     /* ─── Date/Time helpers ─── */
     const MONTH_NAMES = [
-        'January','February','March','April','May','June',
-        'July','August','September','October','November','December'
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
     ];
-    const DAY_NAMES = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
     const buildDays = () => {
         const days = [];
@@ -329,13 +334,46 @@ const Booking = () => {
         setSelectedTime(null);
     };
 
-    // Mock time slots
-    const ALL_SLOTS = [
-        '07:00','07:15','07:30','07:45',
-        '08:30','08:45','09:15','09:45',
-        '10:00','10:30','11:00','11:15',
-        '11:30','11:45','12:00','12:30',
-    ];
+    const getAvailableSlots = () => {
+        if (!selectedStaffObj || !selectedStaffObj.workingHours || !selectedDate) return [];
+        
+        const dayAbbr = DAY_NAMES[selectedDate.getDay()];
+        const isWorkingDay = !selectedStaffObj.workingDays || selectedStaffObj.workingDays.length === 0 || selectedStaffObj.workingDays.includes(dayAbbr);
+        
+        if (!isWorkingDay) return [];
+        
+        const { start, end } = selectedStaffObj.workingHours;
+        if (!start || !end) return [];
+        
+        const [startH, startM] = start.split(':').map(Number);
+        const [endH, endM] = end.split(':').map(Number);
+        
+        const slots = [];
+        let currentH = startH;
+        let currentM = startM;
+        
+        const isToday = selectedDate && isSameDay(selectedDate, today);
+        const currentHour = today.getHours();
+        const currentMinute = today.getMinutes();
+        
+        while (currentH < endH || (currentH === endH && currentM < endM)) {
+            const isPast = isToday && (currentH < currentHour || (currentH === currentHour && currentM <= currentMinute));
+            
+            if (!isPast) {
+                const pad = n => String(n).padStart(2, '0');
+                slots.push(`${pad(currentH)}:${pad(currentM)}`);
+            }
+            
+            currentM += 15;
+            if (currentM >= 60) {
+                currentM -= 60;
+                currentH += 1;
+            }
+        }
+        return slots;
+    };
+
+    const ALL_SLOTS = getAvailableSlots();
     const VISIBLE_COUNT = 10;
     const slots = showMoreSlots ? ALL_SLOTS : ALL_SLOTS.slice(0, VISIBLE_COUNT);
     const hiddenCount = ALL_SLOTS.length - VISIBLE_COUNT;
@@ -357,9 +395,6 @@ const Booking = () => {
     const filteredServices = services.filter(s => selectedCategory === 'All' || s.category === selectedCategory);
 
     /* ─── Confirm Step helpers ─── */
-    const selectedStaffObj = staffMembers.find(s => s._id === selectedStaff);
-    const selectedServiceObj = services.find(s => s._id === selectedService);
-
     const formatConfirmDate = () => {
         if (!selectedDate) return '';
         const day = DAY_NAMES[selectedDate.getDay()];
@@ -398,8 +433,8 @@ const Booking = () => {
                     <div className="confirm-row">
                         <div className="confirm-row-icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-                                <path d="M8 12h8M12 8v8"/>
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" />
+                                <path d="M8 12h8M12 8v8" />
                             </svg>
                         </div>
                         <div className="confirm-row-content">
@@ -434,10 +469,10 @@ const Booking = () => {
                     <div className="confirm-row">
                         <div className="confirm-row-icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                                <line x1="16" y1="2" x2="16" y2="6"/>
-                                <line x1="8" y1="2" x2="8" y2="6"/>
-                                <line x1="3" y1="10" x2="21" y2="10"/>
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
                             </svg>
                         </div>
                         <div className="confirm-row-content">
@@ -453,8 +488,8 @@ const Booking = () => {
                     <div className="confirm-row">
                         <div className="confirm-row-icon">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <polyline points="12 6 12 12 16 14"/>
+                                <circle cx="12" cy="12" r="10" />
+                                <polyline points="12 6 12 12 16 14" />
                             </svg>
                         </div>
                         <div className="confirm-row-content">
@@ -487,11 +522,11 @@ const Booking = () => {
             {/* Policy notice */}
             <div className="confirm-policy">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
                 </svg>
-                <span>Free cancellation up to <strong>24 hours</strong> before your appointment. By confirming, you agree to our <a href="/policy">booking policy</a>.</span>
+                <span>Free cancellation up to <strong>24 hours</strong> before your appointment. By confirming, you agree to our <button type="button" className="policy-link">booking policy</button>.</span>
             </div>
 
         </div>
@@ -502,8 +537,8 @@ const Booking = () => {
         <div className="success-screen">
             <div className="success-checkmark">
                 <svg viewBox="0 0 52 52" className="success-svg">
-                    <circle className="success-circle" cx="26" cy="26" r="25" fill="none"/>
-                    <polyline className="success-check" points="14,27 22,35 38,17" fill="none"/>
+                    <circle className="success-circle" cx="26" cy="26" r="25" fill="none" />
+                    <polyline className="success-check" points="14,27 22,35 38,17" fill="none" />
                 </svg>
             </div>
             <h2 className="success-title">Booking Confirmed!</h2>
@@ -562,11 +597,16 @@ const Booking = () => {
             <div className="dtp-day-strip">
                 {visibleDays.map((day, i) => {
                     const active = isSameDay(day, selectedDate);
+                    const dayAbbr = DAY_NAMES[day.getDay()];
+                    const isWorkingDay = !selectedStaffObj || !selectedStaffObj.workingDays || selectedStaffObj.workingDays.length === 0 || selectedStaffObj.workingDays.includes(dayAbbr);
+
                     return (
                         <button
                             key={i}
-                            className={`dtp-day-cell${active ? ' dtp-day-cell--active' : ''}`}
-                            onClick={() => { setSelectedDate(day); setSelectedTime(null); }}
+                            className={`dtp-day-cell${active ? ' dtp-day-cell--active' : ''}${!isWorkingDay ? ' dtp-day-cell--disabled' : ''}`}
+                            onClick={() => { if (isWorkingDay) { setSelectedDate(day); setSelectedTime(null); } }}
+                            disabled={!isWorkingDay}
+                            style={!isWorkingDay ? { opacity: 0.4, cursor: 'not-allowed' } : {}}
                         >
                             <span className="dtp-day-name">{getDayLabel(day)}</span>
                             <span className="dtp-day-num">{day.getDate()}</span>
@@ -580,19 +620,25 @@ const Booking = () => {
 
             {/* Time slots */}
             <div className="dtp-slots-grid">
-                {slots.map(slot => {
-                    const isBooked = bookedSlots.includes(slot);
-                    return (
-                        <button
-                            key={slot}
-                            className={`dtp-slot${selectedTime === slot ? ' dtp-slot--active' : ''}${isBooked ? ' dtp-slot--disabled' : ''}`}
-                            onClick={() => !isBooked && setSelectedTime(slot)}
-                            disabled={isBooked}
-                        >
-                            {slot}
-                        </button>
-                    );
-                })}
+                {slots.length === 0 ? (
+                    <div style={{gridColumn: '1 / -1', textAlign: 'center', color: '#666', padding: '10px'}}>
+                        No available slots for this day.
+                    </div>
+                ) : (
+                    slots.map(slot => {
+                        const isBooked = bookedSlots.includes(slot);
+                        return (
+                            <button
+                                key={slot}
+                                className={`dtp-slot${selectedTime === slot ? ' dtp-slot--active' : ''}${isBooked ? ' dtp-slot--disabled' : ''}`}
+                                onClick={() => !isBooked && setSelectedTime(slot)}
+                                disabled={isBooked}
+                            >
+                                {slot}
+                            </button>
+                        );
+                    })
+                )}
             </div>
 
             {/* Show more */}
@@ -658,7 +704,7 @@ const Booking = () => {
                                 <h2>Select a Service</h2>
                                 <p>Choose the service you would like to book today.</p>
                             </div>
-                            
+
                             <div className="booking-category-tabs">
                                 {categories.map(cat => (
                                     <button
@@ -675,8 +721,8 @@ const Booking = () => {
                                 {filteredServices
                                     .slice((servicePage - 1) * servicePerPage, servicePage * servicePerPage)
                                     .map(service => (
-                                        <div 
-                                            key={service._id} 
+                                        <div
+                                            key={service._id}
                                             className={`service-selection-card ${selectedService === service._id ? 'selected' : ''}`}
                                             onClick={() => { setSelectedService(service._id); setCurrentStep(2); }}
                                         >
@@ -697,8 +743,8 @@ const Booking = () => {
 
                             {filteredServices.length > servicePerPage && (
                                 <div className="pagination">
-                                    <button 
-                                        className="pagination-prev" 
+                                    <button
+                                        className="pagination-prev"
                                         disabled={servicePage === 1}
                                         onClick={() => setServicePage(p => Math.max(1, p - 1))}
                                     >
@@ -706,8 +752,8 @@ const Booking = () => {
                                     </button>
                                     <div className="pagination-pages">
                                         {Array.from({ length: Math.ceil(filteredServices.length / servicePerPage) }).map((_, i) => (
-                                            <button 
-                                                key={i} 
+                                            <button
+                                                key={i}
                                                 className={`pagination-num ${servicePage === i + 1 ? 'active' : ''}`}
                                                 onClick={() => setServicePage(i + 1)}
                                             >
@@ -715,7 +761,7 @@ const Booking = () => {
                                             </button>
                                         ))}
                                     </div>
-                                    <button 
+                                    <button
                                         className="pagination-btn pagination-next"
                                         disabled={servicePage === Math.ceil(filteredServices.length / servicePerPage)}
                                         onClick={() => setServicePage(p => Math.min(Math.ceil(filteredServices.length / servicePerPage), p + 1))}
@@ -738,7 +784,7 @@ const Booking = () => {
                             ) : (
                                 <>
                                     <div className="staff-grid-two-columns">
-                                        {staffMembers
+                                        {availableStaff
                                             .slice((staffPage - 1) * staffPerPage, staffPage * staffPerPage)
                                             .map((staff) => (
                                                 <div
@@ -774,21 +820,21 @@ const Booking = () => {
                                                 </div>
                                             ))}
                                     </div>
-                                    
-                                    {staffMembers.length > staffPerPage && (
+
+                                    {availableStaff.length > staffPerPage && (
                                         <div className="pagination">
-                                            <button 
-                                                className="pagination-prev" 
+                                            <button
+                                                className="pagination-prev"
                                                 disabled={staffPage === 1}
                                                 onClick={() => setStaffPage(prev => Math.max(1, prev - 1))}
                                             >
                                                 <img src={leftArrow} alt="Prev" className="pagination-icon" />
                                             </button>
-                                            
+
                                             <div className="pagination-pages">
-                                                {Array.from({ length: Math.ceil(staffMembers.length / staffPerPage) }).map((_, i) => (
-                                                    <button 
-                                                        key={i} 
+                                                {Array.from({ length: Math.ceil(availableStaff.length / staffPerPage) }).map((_, i) => (
+                                                    <button
+                                                        key={i}
                                                         className={`pagination-num ${staffPage === i + 1 ? 'active' : ''}`}
                                                         onClick={() => setStaffPage(i + 1)}
                                                     >
@@ -796,11 +842,11 @@ const Booking = () => {
                                                     </button>
                                                 ))}
                                             </div>
-                                            
-                                            <button 
+
+                                            <button
                                                 className="pagination-btn pagination-next"
-                                                disabled={staffPage === Math.ceil(staffMembers.length / staffPerPage)}
-                                                onClick={() => setStaffPage(prev => Math.min(Math.ceil(staffMembers.length / staffPerPage), prev + 1))}
+                                                disabled={staffPage >= Math.ceil(availableStaff.length / staffPerPage)}
+                                                onClick={() => setStaffPage(prev => Math.min(Math.ceil(availableStaff.length / staffPerPage), prev + 1))}
                                             >
                                                 <img src={rightArrow} alt="Next" className="pagination-icon" />
                                             </button>
@@ -946,7 +992,7 @@ const Booking = () => {
                         </div>
 
                         <div className="sidebar-footer">
-                            <button 
+                            <button
                                 className="sidebar-book-btn"
                                 onClick={() => {
                                     handleBookNow(null, selectedDetailsStaff._id);
