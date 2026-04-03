@@ -24,6 +24,7 @@ app.use('/api/appointments', require('./routes/appointmentRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
 app.use('/api/dashboard', require('./routes/dashboardRoutes'));
+app.use('/api/applications', require('./routes/applicationRoutes'));
 
 // Base route
 app.get('/', (req, res) => {

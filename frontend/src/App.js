@@ -6,6 +6,7 @@ import Home from './pages/public/Home';
 import BrowseServices from './pages/public/BrowseServices';
 import HowItWorks from './pages/public/HowItWorks';
 import Staff from './pages/public/Staff';
+import ApplyStaff from './pages/public/ApplyStaff';
 import Login from './pages/auth/Login';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import MyAppointments from './pages/public/MyAppointments';
@@ -17,6 +18,7 @@ import AdminAppointments from './pages/admin/Appointments';
 import AdminServices from './pages/admin/Services';
 import AdminStaff from './pages/admin/Staff';
 import AdminCustomers from './pages/admin/Customers';
+import AdminApplications from './pages/admin/AdminApplications';
 import StaffDashboard from './pages/staff/StaffDashboard';
 import StaffAppointments from './pages/staff/StaffAppointments';
 import StaffSchedule from './pages/staff/StaffSchedule';
@@ -46,6 +48,8 @@ function App() {
             <Route path="/admin/services" element={<AdminServices />} />
             <Route path="/admin/staff" element={<AdminStaff />} />
             <Route path="/admin/customers" element={<AdminCustomers />} />
+            <Route path="/admin/applications" element={<AdminApplications />} />
+            <Route path="/apply" element={<ApplyStaff />} />
             <Route path="/booking" element={<Booking />} />
             <Route path="/booking/:serviceId" element={<Booking />} />
           </Routes>

@@ -316,7 +316,7 @@ const Staff = ({ isLandingPage = false }) => {
                         <div className="join-content">
                             <h2>Want to join our team?</h2>
                             <p>We're always looking for talented artisans to join our community.</p>
-                            <button className="join-btn">Apply Now</button>
+                            <button className="join-btn" onClick={() => navigate('/apply')}>Apply Now</button>
                         </div>
                     </section>
                 </div>

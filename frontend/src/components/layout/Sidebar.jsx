@@ -6,7 +6,8 @@ import {
   Scissors,
   Users,
   User,
-  LogOut
+  LogOut,
+  FileText
 } from 'lucide-react';
 import LogoutConfirmModal from '../ui/LogoutConfirmModal';
 import './Sidebar.css';
@@ -75,6 +76,14 @@ const Sidebar = () => {
         >
           <User className="nav-icon" />
           <span>Customers</span>
+        </NavLink>
+
+        <NavLink
+          to="/admin/applications"
+          className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}
+        >
+          <FileText className="nav-icon" />
+          <span>Applications</span>
         </NavLink>
       </nav>
 
